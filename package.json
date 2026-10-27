@@ -1,0 +1,30 @@
+{
+  "name": "interview-master-os",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "mine": "node scripts/mine-content.mjs",
+    "sync-catalog": "node scripts/sync-repo-catalog.mjs",
+    "verify-catalog": "node scripts/verify-repos.cjs",
+    "build-catalog": "node scripts/build-catalog.cjs"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "canvas-confetti": "^1.9.4",
+    "lucide-react": "^1.61.0",
+    "marked": "^18.1.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "uuid": "^9.0.1"
+  }
+}

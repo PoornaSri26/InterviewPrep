@@ -1,0 +1,41 @@
+# Android-Interview-Questions
+
+This repository contains a number of android interview questions that can be used when vetting potential candidates. I created this list because wanted to have repo, where I can prepare for android job interview, without searching question and answers all around the internet. In all answers you can find the links with the source of the answer, where you may read more detailed information on the question.
+
+## List of the questions
+You can find complete list of questions on the [wiki page](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki)
+
+## Test assignments
+Examples of test assignments can be found [here](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Test-Assignments)
+
+## Coding Challenges
+Examples of coding challenges can be found [here](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Coding-Challenges)
+
+## Interview examples
+[Junior android developer](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Junior-android-developer-interview-questions)  
+[Middle android developer (Rx stack)](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Middle-android-developer-interview-questions-(Rx-stack))  
+[Middle android developer (Coroutines stack)](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Middle-android-developer-interview-questions--(Coroutines-stack))
+
+## Questions to Ask Employers
+Don’t forget — interviews go both ways. You’re not only being evaluated, you’re also evaluating the company.
+
+A list of questions that can help you better understand the team, processes, and what it’s actually like to work there can be found [here](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Questions-to-Ask-Your-Interviewer)
+
+## Questions count
+
+[Android](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Android): 96  
+[Java](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Java): 69  
+[Kotlin](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Kotlin): 54  
+[Rx](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Rx): 21  
+[General](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/General): 48  
+[Testing](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Testing): 13  
+[Patterns](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Patterns): 28  
+[Libraries](https://github.com/Kirchhoff-/Android-Interview-Questions/wiki/Libraries): 13
+
+Total number of questions: 335
+
+## Discussions
+The [Discussions](https://github.com/Kirchhoff-/Android-Interview-Questions/discussions) section also works. It contains questions where your opinion would be interesting to know.
+
+## Contributing
+Pull Request are highly appreciated. Feel free to create a pull request if you find any mistakes or have better answers. Thanks a lot, and hope this is useful.

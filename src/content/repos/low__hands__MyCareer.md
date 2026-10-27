@@ -1,0 +1,404 @@
+<div align="center">
+
+# MyCareer
+
+**可用，持续迭代中**
+
+**跑在你自己电脑上的 AI 求职助手**
+
+找岗位 · 看匹配 · 改简历 · 练面试 · 管投递
+
+[![Stars](https://img.shields.io/github/stars/low-hands/MyCareer?style=flat&logo=github&color=f5c518)](https://github.com/low-hands/MyCareer/stargazers)
+[![License](https://img.shields.io/badge/License-MIT-4f7cff.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Node](https://img.shields.io/badge/Node-20.19+%20%7C%2022.12+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Local first](https://img.shields.io/badge/data-local%20SQLite-4f7cff)](#数据与隐私)
+
+</div>
+
+![MyCareer 功能概览](.github/assets/promo.jpg)
+
+求职时，JD 在浏览器里、简历在文件夹里、投递进度在脑子里、面试安排在邮箱里。MyCareer 把它们放进同一个本地工作区：你用对话把事情交给 Agent，它去查岗位、比简历、改草稿、陪你练面试、记进度。
+
+- **数据本地保存**：岗位、简历、投递和对话都存在你电脑上的 SQLite 里，没有中心服务器。
+- **匹配证据可核对**：每条"符合"都引用你简历里的原文；没有证据的地方只会标成缺口，不会替你编经历。
+- **外部操作由你确认**：写日历、改记忆这类动作，都要你点确认才会执行。
+
+## 功能
+
+### 🔍 找到值得投的岗位
+
+- **岗位收藏**：装上 Chrome 扩展后，在 BOSS 直聘岗位详情页点一下，就把完整 JD 存进岗位库。只有你点击才会保存，扩展不会自动搜索或投递。
+- **岗位分析**：把 JD 要求分成四档：硬门槛、核心要求、重要加分、普通加分，每一条都附上对应的 JD 原文。分错了可以改，系统会同时保留原判断和你的修正。
+- **岗位比较**：结合你确认过的求职偏好，比较几个岗位哪个更值得继续看。覆盖率的算法是公开的：完全符合算 1、部分符合算 0.5、缺失算 0，看不出来的不计入。
+- **公司调研**：针对岗位库里的岗位检索公开资料，每条结论都标明来源，并区分"事实""推断"和"未知"。
+
+### 🧩 看清匹配，找到差距
+
+- **简历管理**：导入 PDF、TXT 或 Markdown。每次导入都是一个不可改的版本，可以随时打开原文件。简历按目标岗位分组，也能移到别的岗位下；重复上传同一个文件不会存两份。
+- **简历点评**：不需要 JD，按简历所在的目标岗位，从 HR 初筛、面试官和简历编辑三个角度指出写得弱的地方和改法，并列出面试官可能追问的问题。扫描件或特殊字体的 PDF 读不出文字时，会自动交给模型识别。
+- **逐条匹配**：拿指定的简历版本对照岗位的每条要求，结论只有四种：匹配、部分匹配、未体现、不明确。整体结论分为强、中、弱和证据不足，这不是录用概率。
+- **补强建议**：针对缺口给出下一步：澄清问题、补材料、做项目或学技能。
+
+### ✍️ 把简历和面试准备好
+
+- **简历定制**：针对目标岗位生成修改草稿，每条修改都必须引用原简历的内容。草稿先给你看，后台同时自动审核有没有夸大；审核通过后逐条接受或拒绝，再下载定稿。
+- **面试准备**：根据投递和面试轮次，整理相关经历和项目素材。
+- **模拟面试**：
+  - 可以针对某次投递练，也可以自由练习。自由练习开始前会先问你用哪份简历（也可以现场上传，或者不用简历），可以指定岗位库里的岗位，也可以只说一个公司。
+  - 开始时先按岗位出好整场的题，逐题提问，根据你的回答决定要不要追问。默认 10 道主问题，每题最多追问 2 次。
+  - 常见大厂（字节、阿里、腾讯等）会参考它们的面试侧重。如果你做过这家公司的调研，也会结合调研里的业务背景出题。
+  - 整场结束后逐题评估：从准确性、相关性、具体性、结构、推理和表达六个方面，每项 1–5 分，再生成复盘报告，并指出前后回答里互相矛盾的地方。
+  - 中途离开，可以从面试中心回到原对话接着答；练完或取消的练习可以"再来一次"。
+
+### 📮 把求职进度管起来
+
+- **投递追踪**：在外部平台投递后，在这里记一笔：选岗位、选当时用的简历版本、填投递时间。之后跟踪状态、事件和面试轮次。
+- **每日概览**：Dashboard 和日报汇总进展和下一步要做的事。
+- **招聘邮件**：连接 Gmail（只读）或 QQ 邮箱，识别招聘相关消息，由你确认后再更新进度。
+- **面试日历**：在面试中心的月历里查看安排；连接 Google 日历后，确认一次写入一次。
+
+### 💬 对话与记忆
+
+- **对话式操作**：直接说出你想做什么。需要你选择或补充信息时，会弹出选项卡片；想自己填写，选"其他"就能在同一行输入。
+- **长期记忆**：只保存你确认过的经历和偏好，可以修改、可以删除。Agent 自己的推断会单独存放，不会直接影响推荐或匹配。
+
+## 界面预览
+
+<table>
+<tr>
+<td width="50%"><img src=".github/assets/readme-screenshots/dashboard-latest.png" alt="求职工作台"></td>
+<td width="50%"><img src=".github/assets/readme-screenshots/jobs-latest.png" alt="岗位库"></td>
+</tr>
+<tr>
+<td><b>求职工作台</b><br><sub>投递进度、最近保存的岗位和下一步行动。</sub></td>
+<td><b>岗位库</b><br><sub>完整 JD、结构化分析、简历匹配和投递状态。</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src=".github/assets/readme-screenshots/match-summary-latest.png" alt="简历与岗位匹配"></td>
+<td width="50%"><img src=".github/assets/readme-screenshots/interview-center-latest.png" alt="面试中心"></td>
+</tr>
+<tr>
+<td><b>简历与岗位匹配</b><br><sub>展示匹配结论、支持证据、未体现项和改进建议。</sub></td>
+<td><b>面试中心</b><br><sub>集中管理模拟面试、练习历史和复盘入口。</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src=".github/assets/readme-screenshots/applications-latest.png" alt="投递记录"></td>
+<td width="50%"></td>
+</tr>
+<tr>
+<td><b>投递记录</b><br><sub>按岗位跟踪投递状态，并从投递进入面试练习。</sub></td>
+<td></td>
+</tr>
+</table>
+
+## 快速开始
+
+> **需要：** Python 3.11+ · [uv](https://docs.astral.sh/uv/) · Node.js `^20.19.0` 或 `>=22.12.0` · 一个 HTTPS 的 OpenAI 兼容模型接口
+> 收藏 BOSS 岗位还需要 Chrome、Edge、Brave、Arc 等 Chromium 内核浏览器。
+> Windows 上请把仓库放在路径较短的目录（如 `C:\code\MyCareer`），或开启系统长路径支持；部分依赖的文件路径很长，目录太深会超过 260 字符上限而导入失败。
+
+**1. 安装依赖**
+
+```bash
+uv sync --extra test
+cd web && npm ci && cd ..
+```
+
+**2. 配置模型**
+
+```bash
+cp .env.example .env
+```
+
+至少填下面两组。两组可以先指向同一个模型服务：
+
+```dotenv
+# 主 Agent：负责对话和决定下一步做什么
+MAIN_AGENT_BASE_URL=https://你的服务/v1
+MAIN_AGENT_API_KEY=你的密钥
+MAIN_AGENT_MODEL=你的模型名
+MAIN_AGENT_TIMEOUT_SECONDS=120
+
+# 专家默认通道：负责简历识别、匹配、邮件处理和面试准备
+RESUME_ANALYSIS_AGENT_BASE_URL=https://你的服务/v1
+RESUME_ANALYSIS_AGENT_API_KEY=你的密钥
+RESUME_ANALYSIS_AGENT_MODEL=你的模型名
+```
+
+`BASE_URL` 填 `/v1` 基地址或完整的 `/chat/completions` 地址都可以。`.env` 已被 Git 忽略，不要提交真实密钥。
+
+模型选择建议：
+
+- **QwenCloud**：优先推荐。`qwen3.7-plus` 适合主 Agent、岗位分析、简历匹配和简历定制；`qwen3.8-flash` 适合摘要、邮件识别和模拟面试。QwenCloud 提供 OpenAI 兼容的 Chat Completions 接口，并支持函数调用和结构化数据。[官方模型选择](https://docs.qwencloud.com/developer-guides/getting-started/model-selection) · [官方兼容接口](https://docs.qwencloud.com/developer-guides/getting-started/first-api-call)
+- **DeepSeek**：`deepseek-flash` 适合成本敏感的普通对话、摘要和结构化分析；官方接口支持 JSON Output 和 Tool Calls。[官方模型与能力](https://api-docs.deepseek.com/quick_start/pricing/)
+  主 Agent 用 DeepSeek 时必须再加下面两行；不加时请求按 Qwen 的格式发出，模型调用工具后的下一次请求会被 DeepSeek 以 400 拒绝：
+
+  ```dotenv
+  MAIN_AGENT_VENDOR=deepseek
+  MAIN_AGENT_ENABLE_THINKING=false
+  ```
+- **岗位调研**：继续使用 GPT 通道，因为当前实现依赖 Responses `web_search`；不要把普通 Chat Completions 模型直接填到这个通道。
+
+对话摘要是独立的 Agent worker，但默认复用 `MAIN_AGENT_*` 的连接；只有需要单独模型时才填写完整配置：
+
+```dotenv
+CONVERSATION_SUMMARY_AGENT_BASE_URL=${MAIN_AGENT_BASE_URL}
+CONVERSATION_SUMMARY_AGENT_API_KEY=${MAIN_AGENT_API_KEY}
+CONVERSATION_SUMMARY_AGENT_MODEL=更快的摘要模型
+CONVERSATION_SUMMARY_AGENT_TIMEOUT_SECONDS=30
+CONVERSATION_SUMMARY_AGENT_MAX_INPUT_TOKENS=32000
+CONVERSATION_SUMMARY_AGENT_MAX_OUTPUT_TOKENS=1200
+CONVERSATION_SUMMARY_AGENT_CONTEXT_WINDOW_TOKENS=65536
+```
+
+摘要 worker 在启动时校验输入预算能否容纳一条最大长度消息、活动事实及请求框架；明显偏小的配置直接报配置错误，不等后台进入重试。默认 32000 保持有效。
+
+当前保守下限约 27.7k token（随模型名、请求框架及输出配置略有变化）。未单独配置摘要 worker 时，它沿用 `MAIN_AGENT_MAX_INPUT_TOKENS`；主模型输入上限降到 24k、16k 或其他低于该下限的值，会导致启动报配置错误，即使普通中文样本实际放得下。此时需完整设置独立的 `CONVERSATION_SUMMARY_AGENT_BASE_URL`、`_API_KEY`、`_MODEL`，并将 `_MAX_INPUT_TOKENS` 设为 32000 或更高，同时满足该 worker 的输入加输出不超过 `_CONTEXT_WINDOW_TOKENS`。
+
+这是最低容量校验：已有摘要的其他字段仍占预算，不能保证任意最大长度内容组合都能放下。
+
+岗位调研单独配置为支持 Responses `web_search` 的 GPT 通道；这里必须填写完整的 URL、密钥和模型：
+
+```dotenv
+JOB_RESEARCH_AGENT_BASE_URL=${RESUME_ANALYSIS_AGENT_BASE_URL}
+JOB_RESEARCH_AGENT_API_KEY=${RESUME_ANALYSIS_AGENT_API_KEY}
+JOB_RESEARCH_AGENT_MODEL=支持web_search的GPT模型
+JOB_RESEARCH_AGENT_TIMEOUT_SECONDS=120
+```
+
+模拟面试和简历定制可以单独换模型。简单配置只覆盖模型名和超时，复用 `RESUME_ANALYSIS_AGENT_*` 的连接：
+
+```dotenv
+MOCK_INTERVIEW_AGENT_MODEL=更快的模型名
+MOCK_INTERVIEW_AGENT_TIMEOUT_SECONDS=60
+MOCK_INTERVIEW_AGENT_PROTOCOL=chat_completions
+RESUME_TAILORING_AGENT_MODEL=更强的模型名
+RESUME_TAILORING_AGENT_TIMEOUT_SECONDS=120
+```
+
+`*_PROTOCOL` 可选 `responses` 或 `chat_completions`。使用只提供 OpenAI 兼容 Chat Completions 的模型服务时要填 `chat_completions`，否则请求可能一直等到超时。若某个能力要改用其他模型服务，则为该通道一起填写 `BASE_URL`、`API_KEY`、`MODEL`；不要只填半组：
+
+```dotenv
+RESUME_TAILORING_AGENT_BASE_URL=https://官方模型服务/v1
+RESUME_TAILORING_AGENT_API_KEY=另一把密钥
+RESUME_TAILORING_AGENT_MODEL=官方快速模型
+```
+
+不填写时仍使用 `RESUME_ANALYSIS_AGENT_*`。当前尚未单独拆出的能力是简历解析、岗位分析、简历匹配、邮件识别和面试准备，它们继续共用这个专家默认通道。
+
+配置关系可以概括为：
+
+| 配置前缀 | 运行时职责 | 是否必须独立填写 |
+| --- | --- | --- |
+| `MAIN_AGENT_*` | 对话、工具选择和流程编排 | 必须 |
+| `RESUME_ANALYSIS_AGENT_*` | 专家默认通道 | 必须 |
+| `CONVERSATION_SUMMARY_AGENT_*` | 对话摘要 worker | 可选，默认复用主 Agent |
+| `JOB_RESEARCH_AGENT_*` | 岗位/公司调研和网页搜索 | 可选；启用时需完整填写 |
+| `MOCK_INTERVIEW_AGENT_*` | 模拟面试 | 可选，默认复用专家通道 |
+| `RESUME_TAILORING_AGENT_*` | 简历定制、定稿和评审 | 可选，默认复用专家通道 |
+
+`CAREER_EMBEDDING_*` 是可选的向量检索服务，不是对话 Agent；`CONTEXT_*` 只是上下文压缩参数。
+
+**3. 创建本地访问密钥**
+
+两条命令要用同一个 `--user-id`，这样网页和浏览器扩展保存的数据才属于同一个用户：
+
+```bash
+uv run career-agent api-keys issue --user-id local-user --name local-web \
+  --scope workspace:read --scope workspace:write \
+  --scope chat:write --scope settings:write --no-expiry
+
+uv run career-agent api-keys issue --user-id local-user --name boss-extension \
+  --scope capture:write --no-expiry
+```
+
+每条命令只显示一次 `secret`。把它们分别填进 `web/.env`：
+
+```dotenv
+CAREER_AGENT_WEB_API_KEY=第一条命令返回的_secret
+VITE_CAPTURE_API_KEY=第二条命令返回的_secret
+```
+
+**4. 启动**
+
+```bash
+uv run career-agent-api        # 终端一，后端默认 http://127.0.0.1:8000
+cd web && npm run dev          # 终端二，前端默认 http://127.0.0.1:5173
+```
+
+浏览器打开 http://127.0.0.1:5173 即可使用。`curl http://127.0.0.1:8000/ready` 返回 503 时，按响应里提示的配置错误检查 `.env`。修改 `web/.env` 后需要重启前端。
+
+**5. 安装 BOSS 岗位收藏扩展（可选）**
+
+1. 在 Chrome 打开 `chrome://extensions`，开启"开发者模式"。
+2. 点击"加载已解压的扩展程序"，选择仓库里的 `browser-extension/`。
+3. 用**同一个 Chrome 用户**打开 MyCareer 网页，并在其中登录 BOSS 直聘。
+4. 打开 BOSS 岗位详情页，右下角会出现保存卡片，点击后才会写入岗位库。
+
+扩展不会自动搜索、滚动、投递或发消息，也不会读取 Cookie、绕过平台验证。详见 [browser-extension/README.md](browser-extension/README.md)。
+
+<p align="center">
+  <img src=".github/assets/readme-screenshots/06-boss-extension.png" alt="BOSS 岗位收藏扩展" width="900">
+</p>
+
+## 怎么用
+
+**第一次上手**
+
+1. 在"简历管理"导入简历（也可以直接拖进对话框），选好它属于哪个目标岗位。
+2. 在简历版本上点"简历点评"，看看哪里需要先改。
+3. 用扩展保存几个感兴趣的 BOSS 岗位。
+4. 让 Agent 做匹配、比较岗位或公司调研。
+5. 需要时发起简历定制：先看草稿，等自动审核通过后逐条确认，再下载定稿。
+6. 投递后在"投递记录"记一笔，之后面试准备、模拟面试都可以从投递开始。
+
+**可以这样说**
+
+| 想做的事 | 例子 |
+| --- | --- |
+| 点评简历 | "帮我点评这份简历"（附上简历） |
+| 看匹配 | "用 Agent开发 这份简历，对照岗位库里量霸科技那个岗位做个匹配" |
+| 比较岗位 | "岗位库里这几个多模态实习，哪个更值得投？" |
+| 公司调研 | "帮我调研一下岗位库里阿里巴巴那个岗位的公司情况" |
+| 定制简历 | "针对这个岗位改一版简历" |
+| 模拟面试 | "我要面字节了，帮我来场模拟面试" · "按阿里的风格练一场行为面，不用简历，5 道题" |
+| 记投递 | "我投了量霸科技的 Agent 开发实习" |
+| 看今天做什么 | "今天有什么要处理的？" |
+
+模拟面试进行中直接在输入框回答就行；说"不练了"会结束这一场。
+
+## 连接邮箱和日历（可选）
+
+<details>
+<summary><b>Gmail</b></summary>
+
+<br>
+
+需要先创建 Google OAuth Client。你授权 Gmail 时不需要填 Client Secret。
+
+1. 打开 [Google Cloud Console](https://console.cloud.google.com/)，创建或选择一个项目。
+2. 在 API Library 启用 **Gmail API**。
+3. 在 Google Auth Platform 配置 OAuth consent screen；测试模式下把自己的 Google 邮箱加入 Test users。
+4. 在 Clients/Credentials 中创建 **Web application** 类型的 OAuth Client。
+5. 添加 Authorized redirect URI：`http://127.0.0.1:8000/v1/connections/google/callback`。
+6. 在仓库根目录的 `.env` 中添加：
+
+   ```dotenv
+   GOOGLE_OAUTH_CLIENT_ID=你的_Client_ID
+   GOOGLE_OAUTH_CLIENT_SECRET=你的_Client_Secret
+   GOOGLE_OAUTH_CALLBACK_URL=http://127.0.0.1:8000/v1/connections/google/callback
+   CAREER_AGENT_WEB_URL=http://127.0.0.1:5173
+   ```
+
+7. 重启后端，在"邮件追踪"页面点击"连接 Gmail"。这里只申请 Gmail 只读权限。
+
+不要把 Client Secret 提交到仓库，也不要放进 `web/.env`。
+
+</details>
+
+<details>
+<summary><b>Google 日历</b></summary>
+
+<br>
+
+不连接 Google 日历也能用：面试安排会显示在"面试中心"的月历里。
+
+需要同步时，在同一个 Google Cloud 项目里启用 **Google Calendar API**，复用上面的 OAuth Client 和回调地址，然后在"面试中心"连接。每次写入日历前都会先给你看预览，确认后才执行。
+
+</details>
+
+<details>
+<summary><b>QQ 邮箱</b></summary>
+
+<br>
+
+QQ 邮箱用 IMAP 授权码，不是登录密码：
+
+1. 登录 [QQ 邮箱网页版](https://mail.qq.com/)。
+2. 打开"设置 → 账号与安全 → 安全设置"。
+3. 开启 IMAP/SMTP 服务，生成授权码。
+4. 在"邮件追踪"页面点击"连接 QQ 邮箱"，填写完整邮箱地址和授权码。
+
+授权码保存在系统钥匙串里，页面和接口都不会返回它。
+
+<p align="center">
+  <img src=".github/assets/readme-screenshots/07-email-tracking.png" alt="邮件追踪" width="900">
+</p>
+
+</details>
+
+## 数据与隐私
+
+- 业务数据默认保存在 `~/.career-agent/`（多个 SQLite 文件和 `working-notes/`）；访问密钥默认保存在仓库的 `data/api_keys.sqlite3`。
+- 项目没有中心服务器，你的岗位、简历、投递和对话不会上传给我们。
+- 但它不是完全离线的：执行 AI 任务时，任务需要的内容会发给你配置的模型服务；使用 Google、QQ 邮箱和 BOSS 时，也受这些服务各自的数据政策约束。
+- 邮箱和日历的连接凭据保存在系统钥匙串；`.env` 里的模型和 OAuth 密钥需要你自己保管好。
+
+## 备份与恢复
+
+开始存正式简历和求职记录之前，建议先养成备份习惯：
+
+```bash
+uv run career-agent backup create
+uv run career-agent backup create --dest /Volumes/usb/career-2026-09-14
+uv run career-agent backup verify --source ~/.career-agent-backups/20260914T120000Z
+uv run career-agent backup restore --source ~/.career-agent-backups/20260914T120000Z --yes
+```
+
+- 备份和恢复前请先停止后端；后端运行时命令会拒绝执行（加 `--allow-running-api` 可以强制备份，但会标记为不一致的快照）。
+- `verify` 检查文件完整性；`restore` 只在校验通过后才覆盖，并且会先自动再备份一份当前数据。
+- 如果改过数据库路径，给 `backup` 传入和启动时相同的 `--*-store` 参数。
+
+## 已知限制
+
+- 目前是本地个人版：只能单进程运行，不要部署成公网或多用户服务，也不要同时启动多个后端共用一套数据。
+- AI 功能依赖你配置的模型服务；服务超时或限流时，对应功能会失败并提示你重试。
+- BOSS 扩展依赖页面结构，BOSS 改版后可能需要更新；它不会绕过登录或风控。
+- 没有后台定时任务：邮件同步、日报刷新和日历写入都需要你手动触发。
+
+<details>
+<summary><b>高级配置</b></summary>
+
+<br>
+
+**公司调研使用独立模型（可选）**
+
+设置 `JOB_RESEARCH_AGENT_BASE_URL` / `_API_KEY` / `_MODEL`（可选 `_TIMEOUT_SECONDS`，默认 30，范围 1–120）。三项都不设置时复用 `RESUME_ANALYSIS_AGENT_*`；只要设置了其中一项，就必须三项都填。该接口需要支持 Responses 的 `web_search` 工具，可以先运行 `python -m career_agent.agent.workflows.job_research.provider_smoke --work-root <目录> --report <新文件>` 检查。
+
+**对话历史压缩**
+
+| 变量 | 默认值 | 范围 |
+| --- | --- | --- |
+| `CONTEXT_RECENT_MESSAGE_LIMIT` | 2048 | 128–8192（条数保险上限；近期窗口按 token 装填） |
+| `CONTEXT_SUMMARY_BATCH_SIZE` | 8 | 2–32 |
+| `CONTEXT_COMPACT_OCCUPANCY_THRESHOLD` | 0.75 | 0.7–0.9 |
+| `MAIN_AGENT_CONTEXT_WINDOW_TOKENS` | 65536 | 2048–2000000，按模型实际窗口填写 |
+
+启动时会检查 `MAIN_AGENT_MAX_INPUT_TOKENS + MAIN_AGENT_MAX_OUTPUT_TOKENS` 不超过上下文窗口（默认 32000 + 16384）。
+
+对话摘要可以用一个更快、更便宜的模型：设置 `CONVERSATION_SUMMARY_AGENT_BASE_URL` / `_API_KEY` / `_MODEL`（可选 `_TIMEOUT_SECONDS`、`_MAX_INPUT_TOKENS`、`_MAX_OUTPUT_TOKENS`、`_CONTEXT_WINDOW_TOKENS`、`_DISABLE_THINKING`）。都不设置时复用主 Agent 的连接。
+
+**并发**
+
+- 后端只支持单 worker：`uv run career-agent-api` 已固定为 1；不要使用 `--workers 2+` 或 `WEB_CONCURRENCY>1`。
+- 同时运行的对话轮次默认最多 3 个（`CAREER_AGENT_MAX_CONCURRENT_TURNS`）；关闭服务时最多等待 30 秒让正在进行的任务结束（`CAREER_AGENT_SHUTDOWN_DRAIN_SECONDS`）。
+- 后端运行时，会写数据库的命令行操作（导入简历、签发密钥等）会被拒绝，请先停止后端。
+
+</details>
+
+## 开发
+
+```bash
+uv run pytest
+cd web && npm test && npm run build
+cd browser-extension && node --test tests/*.test.cjs
+```
+
+后端 API 契约有变化时，运行 `uv run python -m career_agent.api.public_contract` 重新生成 `web/src/contracts/api-contract.ts`。
+
+模型评估的录制、离线回放、多步任务、跨轮续接、欠行动、提示词注入和 pass^k 运行说明见 [Runtime 质量评估](evals/runtime_quality/README.md)。单元测试通过与模型质量达标分别报告。
+
+## 许可证
+
+[MIT](LICENSE) © 2026 Rui Guo

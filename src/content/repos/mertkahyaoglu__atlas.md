@@ -1,0 +1,338 @@
+# System Design Atlas
+
+**[Read it at atlas-sysdes.vercel.app →](https://atlas-sysdes.vercel.app)**
+
+A reading app for system design interviews: concept modules built from the ground
+up, pages on the technologies those designs name, and worked designs with rendered
+architecture diagrams.
+
+Every design opens with the hard part — what the interviewer is actually testing —
+and closes with trade-offs and follow-up questions. Architecture diagrams are
+interactive: click a node to see its purpose, its trade-off and what it connects to.
+Some designs carry a worked interview script, the same design spoken aloud as a
+45-minute round.
+
+A second track covers the other half of the interview loop. Under
+[/coding](https://atlas-sysdes.vercel.app/coding), thirteen data structures and
+algorithms — hash tables through dynamic programming — each open with a
+visualisation you step through while the implementation runs line by line beside
+it. The logo in the sidebar switches between the two tracks.
+
+The sidebar also has an **AI** section. [Concepts](https://atlas-sysdes.vercel.app/docs/01-concepts)
+explains fifty terms for building with language models, from tokens to shipping, and
+[Q&A](https://atlas-sysdes.vercel.app/docs/02-qa) answers twenty AI engineering interview
+questions.
+
+A **Courses** section follows, for courses that build one real system end to end. The
+first, **AI Engineering**, builds a production application,
+[DocsPilot](https://github.com/mertkahyaoglu/DocsPilot), in an
+[overview](https://atlas-sysdes.vercel.app/docs/ai-engineering-00-overview) and eight
+lessons: foundations, tools and agents, retrieval, evals, observability and cost, safety,
+shipping and advanced patterns. Each lesson explains the concepts with the project's real
+code, architecture diagrams and self-check questions.
+
+Contributions are welcome, particularly corrections. See
+[CONTRIBUTING.md](CONTRIBUTING.md). If the atlas is useful to you, you can
+[sponsor it](https://github.com/sponsors/mertkahyaoglu).
+
+## Running it
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+```
+
+```bash
+npm run build && npm start   # production
+```
+
+Node 18.17 or newer.
+
+## How it works
+
+Content is plain markdown on disk. `lib/content.ts` reads `content/` at build time,
+parses frontmatter with gray-matter, and every page is statically generated — there is
+no database and no CMS.
+
+```
+app/
+  layout.tsx              root shell, theme bootstrap
+  page.tsx                home index
+  docs/[slug]/page.tsx    document page, statically generated per file
+  coding/page.tsx         coding track index
+  coding/[slug]/page.tsx  coding concept page, with its visualisation
+components/
+  layout/                 sidebar, top bar, theme toggle
+  home/                   hero, filter bar, cards
+  docs/                   markdown renderer, diagrams, TOC, prev/next
+  docs/diagram/           React Flow canvas, node types, node detail dialog
+  viz/                    step-through player, canvas and code pane (coding track)
+  ui/                     tag, search input, badges, empty state
+lib/
+  content.ts              filesystem loader, TOC builder, sibling lookup
+  tags.ts                 tag registry (single source of truth)
+  glossary.ts             abbreviations and their expansions, shown on hover
+  search.ts               filter and sort logic, pure and testable
+  types.ts                shared types
+  viz/                    one visualisation per coding concept, plus shared layout
+store/
+  useUiStore.ts           theme (persisted) and sidebar
+  useFilterStore.ts       query, tags, sort
+content/
+  concepts/*.md           concept modules
+  tech/*.md               technology pages
+  designs/*.md            designs
+  ai/*.md                 AI concepts and Q&A, the "AI" sidebar section
+  courses/*.md            courses, the "Courses" sidebar section; each course is a `part`
+  coding/*.md             coding concepts
+scripts/
+  check-viz.mjs           validates every visualisation, run in CI
+  check-abbr.mjs          fails on an abbreviation missing from the glossary, run in CI
+```
+
+## Adding a document
+
+1. Drop a `.md` file into `content/concepts/`, `content/tech/` or `content/designs/`.
+2. Give it frontmatter:
+
+```yaml
+---
+group: "design"
+order: 17
+title: "Design a Feature Flag Service"
+summary: "One line shown on the card and in search results."
+hardPart: "Designs only. What the interviewer is actually testing."
+tags: ["caching", "redis"]
+---
+```
+
+3. Any tag you use must exist in `lib/tags.ts`. Unknown tags fall back to their raw id
+   rather than throwing, but they won't appear in the filter bar until registered.
+4. Technology pages add a `role`: two or three words naming what the thing *is*
+   ("Event log", "Wide-column store"), shown on the card. They follow a fixed
+   shape — **Basics**, **Key concepts and capabilities**, **When to use it in an
+   interview**, **What interviewers push on** — so they can be read in any order
+   and compared against each other.
+5. Designs also keep their opening and closing panels in frontmatter: `hardPartDetail`,
+   `concepts`, `requirements`, `scale`, `tradeoffs` and `followUps`. `lib/content.ts`
+   logs a warning for any that are missing. An existing design such as
+   `content/designs/02-chat-slack.md` is the easiest template to copy.
+6. Every abbreviation in the prose needs an entry in `lib/glossary.ts`. The first use
+   of each one per section is tinted and spells itself out on hover, focus or tap, so
+   write "APNs" and let the tooltip say "Apple Push Notification service".
+   `npm run check:abbr` lists any that are missing; CI runs it too. Terms every reader
+   knows (API, URL, JSON) and product names go in `NOT_ABBREVIATIONS` instead.
+7. A run of documents inside a group can share a `part`: each course in
+   `content/courses/` is one (`part: "AI Engineering"`), with `group: "course"` and
+   slugs prefixed by the course, e.g. `ai-engineering-03-retrieval`. A new course is a new
+   `part` in the same directory. The sidebar lists a part's documents under its label and numbers
+   them from 00 within it, and the page header shows the part and the number. Keep a
+   part's `order` values consecutive so prev/next walks through it in sequence.
+   In the sidebar a part is a sub-section the reader can fold on its own, and it counts
+   once in its section's total (Courses shows the number of courses, not lessons). The
+   folded state persists like a section's but needs no stylesheet rule: the part's body
+   reads a `--collapsed-part-<name>` variable that ThemeScript sets before first paint.
+
+That's it — the sidebar, index cards, filters, prev/next links and static routes all
+derive from the file. Nothing else needs editing.
+
+## Diagrams
+
+Fenced blocks tagged `mermaid` render as diagrams; everything else renders as a
+copyable code block. Blocks tagged with a language in the `HIGHLIGHTED` list in
+`components/docs/CodeBlock.tsx` (`python`, `sql`, `ts`, `js`, `json`, `yaml`, `bash`
+and a few more) are syntax-highlighted with theme colours; `text`, untagged and
+unlisted blocks stay plain. Prism is loaded lazily, so a page with no highlighted
+block never downloads it.
+
+A collapsible question, as in the AI course's "Check yourself" sections, is raw HTML:
+`<details><summary>Question?</summary>` then a blank line, the answer in markdown, a
+blank line and `</details>`. Markdown is not parsed inside `<summary>`, so write inline
+code there as `<code>…</code>`, not backticks.
+
+Flowcharts (`flowchart TB` or `flowchart LR`) are drawn with React Flow, so they pan,
+zoom and go full screen. They are still authored in Mermaid syntax:
+`lib/diagram/parse.ts` reads the subset the content uses (its header comment lists
+it), `lib/diagram/layout.ts` places the nodes with dagre, and
+`components/docs/diagram/` renders them. Every node kind is its own small component
+built on a shared `NodeCard`. Sequence and ER diagrams still render with Mermaid,
+dynamically imported so its ~500 KB stays out of the initial bundle. React Flow loads
+lazily too.
+
+Each design's architecture diagram is written directly in its markdown, under
+`## High-level architecture`. Clicking a node opens a dialog with its purpose, its
+trade-off and its connections. The purpose and trade-off come from a `click` line,
+which also links the node to a concept module:
+
+```text
+click Node href "/docs/05-async-messaging-and-event-driven" "Role: …<br/>Trade-off: …"
+```
+
+A node without a `click` line shows general notes for its kind instead, from
+`lib/diagram/kinds.ts`.
+
+If a chart fails to parse, the diagram falls back to showing the source rather than
+blanking the page.
+
+Node colour is by kind, not per diagram, so the same colour means the same thing on
+every page. A node's class sets its kind:
+
+```text
+class Node db        durable stores: Postgres, Cassandra tables
+class Node cache     Redis, or anything explicitly TTL'd
+class Node blob      object storage: S3-style blobs
+class Node queue     message buses, topics, pub/sub
+class Node external  third-party systems: APNs, SMTP, a PSP, a CDN
+class Node gateway   the edge reverse-proxy tier: an API gateway
+class Node lb        a load balancer
+class Node hot       the node the deep dive is actually about
+```
+
+An unclassed node takes its kind from its shape: `[(…)]` is a plain data store,
+`([…])` an endpoint such as a client or a response, `{…}` a decision, and anything
+else a service. Colours are theme tokens (`--tone-*` in `app/globals.css`), so they
+adapt to both themes. `classDef` lines are ignored by the renderer; keep them only if
+you want the fence to still look right in a plain Mermaid viewer.
+
+`hot` is an emphasis layered on top of a kind (`class Node1 db` and `class Node1 hot`
+both apply), not a kind of its own. A stateful, per-connection **WS gateway** (the socket-holding
+tier in the chat-style designs) is deliberately left uncoloured — it's a different thing
+from an API gateway's reverse-proxy role, and colouring both the same would blur that
+distinction rather than sharpen it. Everything else stays the unclassed default box, so
+the coloured nodes read as "this holds state," "this is async," "this isn't ours," and
+"this is the edge tier" at a glance, rather than fighting for attention with the
+majority of plain service nodes.
+
+These are flat hex, not `var(--token)` or `rgba(...)` — Mermaid's `classDef` grammar
+parses the style string itself and rejects any value with parentheses in it, so both
+fail to parse. That also means these colours don't adapt to the light theme; they're
+picked to still read fine there since dark is this app's default.
+
+A design's `## High-level architecture` can also show how the design changes at a
+higher scale, as a second tab. `lib/tabs.ts` splits the body on comment markers; each
+marker starts a tab, and the part of a label after ` · ` renders as a muted note:
+
+```markdown
+<!-- tab: Today · ~200 msg/s -->
+…today's diagram and walkthrough…
+<!-- tab: At 100x · ~20k msg/s -->
+…the scaled diagram and what changes…
+<!-- /tabs -->
+```
+
+Keep headings out of tabs, since the table of contents would link into a hidden panel.
+In the scaled diagram, layer `classDef scaled stroke-dasharray:5 3` on nodes that are
+new or reshaped compared with today's design, the same way `hot` layers on a type.
+
+## Interview scripts
+
+A design can carry a worked script: the same design spoken aloud as a 45-minute
+round, following the six phases of `content/concepts/10-interview-playbook.md`. Drop
+`content/scripts/<slug>.md` next to the design's slug and a **Script** button appears in
+its header; without the file nothing changes.
+
+The file is plain markdown. A `##` heading starts a phase, and each speaking turn starts
+with a speaker marker:
+
+```markdown
+## Clarify · 5 min · Requirements, and the scope cuts said out loud
+
+@interviewer · the prompt
+Design the chat that lets a researcher talk to the participants in their study.
+
+@you
+Let me play that back and then agree the shape with you…
+
+@note · Playbook 10.4
+Why that move scores. Notes are asides, not a third voice in the room.
+```
+
+A phase heading's fields are ` · ` separated: the title first, then a `N min` budget and a
+one-line goal in either order. A marker takes an optional ` · cue` — a stage direction
+such as `drawing`, or the playbook section a note draws on. `lib/script.ts` parses it,
+`getScript()` loads it, and `components/docs/script/` renders it in a dialog. Turn bodies
+are markdown, so tables and lists work.
+
+Only `@you`, `@interviewer` and `@note` are speakers; text before the first marker (a
+title, an intro) is ignored, so the file still reads top to bottom in a plain markdown
+viewer.
+
+## The coding track
+
+Coding concepts live in `content/coding/` and render under `/coding`, with their own
+sidebar and a blue accent. Their frontmatter carries the panels around the body —
+a cost table, the signals that call for the structure, pitfalls and follow-ups:
+
+```yaml
+---
+title: Heaps
+order: 8
+summary: One line, shown on the card and under the title.
+hardPart: What an interviewer is actually testing.
+viz: heap                  # names a visualisation in lib/viz/registry.ts
+complexity:
+  - op: Push / pop
+    time: O(log n)
+    note: Why it costs that.
+reachFor: [...]
+pitfalls: [...]
+followUps:
+  - question: ...
+    answer: ...
+---
+```
+
+A visualisation is data, not animation code. `lib/viz/types.ts` defines a
+**frame** as a complete snapshot of the drawing; node ids stay stable across frames,
+so stepping forward rewrites positions and a CSS transition turns each jump into a
+move. Each file builds its frames from one `scene()` function, so the picture is a
+pure function of the algorithm's state.
+
+`npm run check:viz` validates every visualisation — duplicate node ids, edges to
+missing nodes, highlighted code lines outside the listing, content overflowing the
+canvas, boxes drawn on top of each other. CI runs it on every pull request.
+
+## Design notes
+
+Three accent colours carry information rather than decoration: teal marks concept
+modules, violet marks technologies, amber marks designs. The accent is set once per page as a CSS variable
+(`--accent`) and every component reads it, so no component branches on theme or group.
+
+Numbered markers appear on cards and in the sidebar because the content genuinely is
+ordered — concepts build on each other, and designs are ranked by how often they come
+up in interviews.
+
+Dark is the default because this is long-form night reading. The theme is stored in
+`localStorage` via Zustand's persist middleware and applied by an inline script in
+`<head>` before first paint, so there's no light flash on reload.
+
+## Extending it
+
+- **Full-text search across document bodies.** `lib/search.ts` currently matches on
+  title, summary, hard part and tags. Swap in a prebuilt index (FlexSearch, Pagefind)
+  generated at build time from `getAllDocs()`.
+- **Progress tracking.** Add a `useProgressStore` alongside the existing stores and
+  render a marker in `SidebarLink` and on the cards.
+- **Another content group.** `tech` is the worked example: add it to `DocGroup` in
+  `lib/types.ts`, give it a directory in `GROUP_DIR` and a slot in `GROUP_ORDER`, an
+  accent variable in `globals.css` and `tailwind.config.ts`, a label in `GroupBadge`,
+  and a `Section` in the sidebar and on the home page. Everything else — routes,
+  search, filters, prev/next, progress — is generic over the group.
+
+## See also
+
+- [awesome-system-design](https://github.com/madd86/awesome-system-design) — a curated list of system design
+  resources: articles, books, talks and the tools the designs here name.
+
+## License
+
+Two licenses, because this repository is two things.
+
+- **The documents** — everything under `content/`, which is most of the work here —
+  are [CC BY-SA 4.0](LICENSE-CONTENT). Share them, translate them, build on them;
+  credit "System Design Atlas by Mert Kahyaoğlu" with a link back, and license what
+  you build from them the same way.
+- **The application code** — everything else — is [MIT](LICENSE).
+
+Contributions are taken under the [DCO](CONTRIBUTING.md#sign-your-commits-dco), so
+commits need a `Signed-off-by` line. You keep the copyright in what you write.
