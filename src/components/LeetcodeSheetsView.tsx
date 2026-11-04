@@ -81,15 +81,22 @@ export const LeetcodeSheetsView: React.FC<LeetcodeSheetsViewProps> = ({
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/leetcode-sheets.json')
+    fetch('/leetcode-sheets.json', { cache: 'no-store' })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('text/html')) throw new Error('Received HTML instead of JSON (check static file serving)');
+        return r.text();
       })
-      .then((json: LeetcodeSheetsFile) => {
-        if (!cancelled) {
-          setData(json);
-          setLoading(false);
+      .then((text) => {
+        try {
+          const json = JSON.parse(text) as LeetcodeSheetsFile;
+          if (!cancelled) {
+            setData(json);
+            setLoading(false);
+          }
+        } catch (e: any) {
+          throw new Error(`Invalid JSON: ${e.message}`);
         }
       })
       .catch((e) => {

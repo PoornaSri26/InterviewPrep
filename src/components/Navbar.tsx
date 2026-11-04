@@ -15,7 +15,8 @@ import {
   Building,
   Wallet,
   Search,
-  BookOpen
+  BookOpen,
+  Home
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -24,6 +25,7 @@ interface NavbarProps {
   streak: { current: number; max: number };
   onOpenSettings: () => void;
   onOpenSearch: () => void;
+  onGoHome?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -31,7 +33,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   streak,
   onOpenSettings,
-  onOpenSearch
+  onOpenSearch,
+  onGoHome
 }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -53,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="navbar">
       <div className="navbar-inner">
         {/* Brand */}
-        <div className="brand" onClick={() => setActiveTab('dashboard')}>
+        <div className="brand" onClick={() => onGoHome ? onGoHome() : setActiveTab('dashboard')} style={{ cursor: 'pointer' }} title="Back to Home">
           <div className="brand-icon-wrapper">
             <Sparkles size={20} />
           </div>

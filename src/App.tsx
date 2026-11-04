@@ -83,7 +83,18 @@ export function App() {
 
   // Mined repo content: bank, flashcard decks, roadmap plans (all optional — app degrades gracefully)
   useEffect(() => {
-    const safeFetch = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    const safeFetch = (url: string) => fetch(url, { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) return null;
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('text/html')) return null;
+        return r.text();
+      })
+      .then((t) => {
+        if (!t) return null;
+        try { return JSON.parse(t); } catch { return null; }
+      })
+      .catch(() => null);
     safeFetch('/repo-bank.json').then((j) => j && setRepoBank(j));
     safeFetch('/repo-flashcards.json').then((j) => j && setBankDecks(j));
     safeFetch('/repo-roadmaps.json').then((j) => j && setRepoPlans(j));
@@ -91,25 +102,35 @@ export function App() {
 
   // One shared sheet index — feeds tracker badges, merged stats and global search
   useEffect(() => {
-    fetch('/leetcode-sheets.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json) => {
-        if (!json) return;
-        const meta: SheetMetaMap = {};
-        for (const sheet of json.sheets) {
-          for (const p of sheet.problems) {
-            const key = String(p.title).toLowerCase();
-            const entry = meta[key];
-            if (!entry) {
-              meta[key] = { frequency: p.frequency, companies: [sheet.company] };
-            } else {
-              if (!entry.companies.includes(sheet.company)) entry.companies.push(sheet.company);
-              if (p.frequency > entry.frequency) entry.frequency = p.frequency;
+    fetch('/leetcode-sheets.json', { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) return null;
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('text/html')) return null;
+        return r.text();
+      })
+      .then((text) => {
+        if (!text) return;
+        try {
+          const json = JSON.parse(text);
+          const meta: SheetMetaMap = {};
+          for (const sheet of json.sheets || []) {
+            for (const p of sheet.problems || []) {
+              const key = String(p.title).toLowerCase();
+              const entry = meta[key];
+              if (!entry) {
+                meta[key] = { frequency: p.frequency, companies: [sheet.company] };
+              } else {
+                if (!entry.companies.includes(sheet.company)) entry.companies.push(sheet.company);
+                if (p.frequency > entry.frequency) entry.frequency = p.frequency;
+              }
             }
           }
+          setSheetMeta(meta);
+          setSheetInfo({ companies: json.companyCount, totalProblems: json.totalProblems });
+        } catch (e) {
+          // ignore parse errors
         }
-        setSheetMeta(meta);
-        setSheetInfo({ companies: json.companyCount, totalProblems: json.totalProblems });
       })
       .catch(() => {});
   }, []);
@@ -397,6 +418,7 @@ export function App() {
         streak={streak}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenSearch={() => setSearchOpen(true)}
+        onGoHome={() => setShowLanding(true)}
       />
 
 

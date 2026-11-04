@@ -58,26 +58,34 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, dat
       return;
     }
     let cancelled = false;
-    fetch('/repo-bank.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json) => {
-        if (cancelled || !json) return;
-        const needle = q.trim().toLowerCase();
-        const hits: Hit[] = [];
-        for (const p of json.problems) {
-          if (hits.length >= 150) break;
-          if (p.title.toLowerCase().includes(needle) || p.topics.some((t: string) => t.toLowerCase().includes(needle))) {
-            hits.push({
-              tab: 'dsa',
-              key: p.id,
-              title: p.title,
-              sub: `Repo bank · ${p.difficulty.toLowerCase()} · ${p.sourceRepo}`,
-              kind: 'Repo bank',
-              icon: iconFor.bank
-            });
+    fetch('/repo-bank.json', { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) return null;
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('text/html')) return null;
+        return r.text();
+      })
+      .then((text) => {
+        if (cancelled || !text) return;
+        try {
+          const json = JSON.parse(text);
+          const needle = q.trim().toLowerCase();
+          const hits: Hit[] = [];
+          for (const p of json.problems || []) {
+            if (hits.length >= 150) break;
+            if (p.title.toLowerCase().includes(needle) || (p.topics || []).some((t: string) => t.toLowerCase().includes(needle))) {
+              hits.push({
+                tab: 'dsa',
+                key: p.id,
+                title: p.title,
+                sub: `Repo bank · ${p.difficulty.toLowerCase()} · ${p.sourceRepo}`,
+                kind: 'Repo bank',
+                icon: iconFor.bank
+              });
+            }
           }
-        }
-        setBankHits(hits);
+          setBankHits(hits);
+        } catch {}
       })
       .catch(() => {});
     return () => { cancelled = true; };
@@ -116,29 +124,37 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose, dat
       return;
     }
     let cancelled = false;
-    fetch('/leetcode-sheets.json')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json) => {
-        if (cancelled || !json) return;
-        const needle = q.trim().toLowerCase();
-        const hits: Hit[] = [];
-        for (const sheet of json.sheets) {
-          for (const p of sheet.problems) {
-            if (hits.length >= 400) break;
-            if (p.title.toLowerCase().includes(needle)) {
-              hits.push({
-                tab: 'sheets',
-                key: sheet.company,
-                title: p.title,
-                sub: `${sheet.company} · ${p.difficulty.toLowerCase()} · freq ${p.frequency}`,
-                kind: 'Sheet problem',
-                icon: iconFor.sheets
-              });
+    fetch('/leetcode-sheets.json', { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) return null;
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('text/html')) return null;
+        return r.text();
+      })
+      .then((text) => {
+        if (cancelled || !text) return;
+        try {
+          const json = JSON.parse(text);
+          const needle = q.trim().toLowerCase();
+          const hits: Hit[] = [];
+          for (const sheet of json.sheets || []) {
+            for (const p of sheet.problems || []) {
+              if (hits.length >= 400) break;
+              if (p.title.toLowerCase().includes(needle)) {
+                hits.push({
+                  tab: 'sheets',
+                  key: sheet.company,
+                  title: p.title,
+                  sub: `${sheet.company} · ${p.difficulty.toLowerCase()} · freq ${p.frequency}`,
+                  kind: 'Sheet problem',
+                  icon: iconFor.sheets
+                });
+              }
             }
+            if (hits.length >= 400) break;
           }
-          if (hits.length >= 400) break;
-        }
-        setSheetHits(hits);
+          setSheetHits(hits);
+        } catch {}
       })
       .catch(() => {});
     return () => { cancelled = true; };

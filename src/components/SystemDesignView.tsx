@@ -41,9 +41,21 @@ export const SystemDesignView: React.FC = () => {
   useEffect(() => {
     if (activeTab !== 'library' || library || libLoading || libError) return;
     setLibLoading(true);
-    fetch('/sd-library.json')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((json: SdLibraryFile) => { setLibrary(json); setLibLoading(false); })
+    fetch('/sd-library.json', { cache: 'no-store' })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const ct = r.headers.get('content-type') || '';
+        if (ct.includes('text/html')) throw new Error('Received HTML instead of JSON');
+        return r.text();
+      })
+      .then((text) => {
+        try {
+          const json = JSON.parse(text) as SdLibraryFile;
+          setLibrary(json); setLibLoading(false);
+        } catch (e: any) {
+          throw new Error(`Invalid JSON: ${e.message}`);
+        }
+      })
       .catch((e) => { setLibError(`Could not load sd-library.json — run \`npm run mine\`. (${e.message})`); setLibLoading(false); });
   }, [activeTab, library, libLoading, libError]);
 
