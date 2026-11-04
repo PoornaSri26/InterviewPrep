@@ -33,7 +33,7 @@ export const CodeSandboxView: React.FC<CodeSandboxViewProps> = ({
   const currentProblem =
     problems.find((p) => p.id === activeProblemId) || problems[0];
 
-  const [language, setLanguage] = useState<'javascript' | 'python'>('javascript');
+  const [language, setLanguage] = useState<'javascript' | 'python' | 'java' | 'cpp' | 'typescript'>('javascript');
   const [code, setCode] = useState(currentProblem.starterCodeJs);
   const [testResults, setTestResults] = useState<{
     ran: boolean;
@@ -55,8 +55,28 @@ export const CodeSandboxView: React.FC<CodeSandboxViewProps> = ({
   useEffect(() => {
     if (language === 'javascript') {
       setCode(currentProblem.starterCodeJs);
-    } else {
+    } else if (language === 'python') {
       setCode(currentProblem.starterCodePy);
+    } else if (language === 'java') {
+      setCode(`public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // Write your solution here
+        return new int[]{0,1};
+    }
+}`);
+    } else if (language === 'cpp') {
+      setCode(`#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution here
+        return {};
+    }
+};`);
+    } else {
+      setCode(currentProblem.starterCodeJs);
     }
     setTestResults({ ran: false, allPassed: false, results: [], logs: [] });
     setShowHints(false);
@@ -74,8 +94,17 @@ export const CodeSandboxView: React.FC<CodeSandboxViewProps> = ({
 
   // Run in-browser test runner
   const handleRunTests = () => {
-    if (language === 'python') {
-      alert('In-browser test runner executes JavaScript natively. Switch to JavaScript tab to run automated test cases.');
+    if (language === 'python' || language === 'java' || language === 'cpp') {
+      setTestResults({
+        ran: true,
+        allPassed: false,
+        results: [],
+        logs: [
+          '[INFO] Multi-language execution requires external judge service (Judge0/Piston).',
+          `[INFO] Code ready for execution in ${language.toUpperCase()}.`,
+          '[TIP] For local testing, use the in-browser JavaScript runner or connect to a judge API.'
+        ]
+      });
       return;
     }
 
@@ -134,35 +163,47 @@ export const CodeSandboxView: React.FC<CodeSandboxViewProps> = ({
               </option>
             ))}
           </select>
-        </div>
+        </div>          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', background: 'var(--bg-surface-elevated)', padding: '3px', borderRadius: 'var(--radius-md)' }}>
+              <button
+                className={`nav-tab-btn ${language === 'javascript' ? 'active' : ''}`}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                onClick={() => setLanguage('javascript')}
+              >
+                JavaScript
+              </button>
+              <button
+                className={`nav-tab-btn ${language === 'python' ? 'active' : ''}`}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                onClick={() => setLanguage('python')}
+              >
+                Python
+              </button>
+              <button
+                className={`nav-tab-btn ${language === 'java' ? 'active' : ''}`}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                onClick={() => setLanguage('java' as any)}
+              >
+                Java
+              </button>
+              <button
+                className={`nav-tab-btn ${language === 'cpp' ? 'active' : ''}`}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                onClick={() => setLanguage('cpp' as any)}
+              >
+                C++
+              </button>
+            </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', background: 'var(--bg-surface-elevated)', padding: '3px', borderRadius: 'var(--radius-md)' }}>
-            <button
-              className={`nav-tab-btn ${language === 'javascript' ? 'active' : ''}`}
-              style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-              onClick={() => setLanguage('javascript')}
-            >
-              JavaScript
+            <button className="btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem' }} onClick={handleResetCode}>
+              <RotateCcw size={14} />
+              Reset
             </button>
-            <button
-              className={`nav-tab-btn ${language === 'python' ? 'active' : ''}`}
-              style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-              onClick={() => setLanguage('python')}
-            >
-              Python
+            <button className="btn-primary" style={{ padding: '0.45rem 1.1rem', fontSize: '0.85rem' }} onClick={handleRunTests}>
+              <Play size={15} />
+              Run Test Cases
             </button>
           </div>
-
-          <button className="btn-secondary" style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem' }} onClick={handleResetCode}>
-            <RotateCcw size={14} />
-            Reset
-          </button>
-          <button className="btn-primary" style={{ padding: '0.45rem 1.1rem', fontSize: '0.85rem' }} onClick={handleRunTests}>
-            <Play size={15} />
-            Run Test Cases
-          </button>
-        </div>
       </div>
 
       {/* Main Split: Left Problem Description | Right Code Editor & Test Cases */}
