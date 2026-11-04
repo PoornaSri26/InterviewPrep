@@ -355,6 +355,61 @@ export const coachDrillCards = (drills: CoachDrill[]): { front: string; back: st
     back: `${drill.why} ${drill.action}`
   }));
 
+export interface ExplainBackResult {
+  score: number;
+  feedback: string[];
+  strengths: string[];
+  improvements: string[];
+  twistQuestion: string;
+}
+
+export const evaluateExplainBack = (problemTitle: string, explanation: string, twistAnswer?: string): ExplainBackResult => {
+  const text = normalize(explanation);
+  const words = explanation.split(/\s+/).filter(Boolean).length;
+  const hasApproach = /(approach|algorithm|method|idea|strategy)/.test(text);
+  const hasComplexity = /(time|space|complexity|o\(|big o)/.test(text);
+  const hasExample = /(example|walk|step|first|then)/.test(text);
+  const hasEdge = /(edge|case|corner|empty|null)/.test(text);
+
+  let score = 60;
+  const feedback: string[] = [];
+  const strengths: string[] = [];
+  const improvements: string[] = [];
+
+  if (words >= 60) { score += 10; strengths.push('Good explanation length'); }
+  else improvements.push('Explain in more detail (aim for 60-120 words)');
+
+  if (hasApproach) { score += 10; strengths.push('Clearly explained your approach'); }
+  else improvements.push('Start with your high-level approach');
+
+  if (hasComplexity) { score += 10; strengths.push('Mentioned time/space complexity'); }
+  else improvements.push('Include time and space complexity');
+
+  if (hasExample) { score += 5; strengths.push('Walked through an example'); }
+  else improvements.push('Walk through a small example step by step');
+
+  if (hasEdge) { score += 5; strengths.push('Considered edge cases'); }
+  else improvements.push('Mention edge cases to consider');
+
+  score = Math.min(100, score);
+
+  const twistQuestions = [
+    `Now the array is streaming - can you do this in one pass?`,
+    `What if there are duplicate values? How would your approach change?`,
+    `Can you optimize this further? What's the trade-off?`,
+    `How would you test this solution? What edge cases would you check?`,
+    `If the input is 10x larger, would your solution still work well?`
+  ];
+
+  return {
+    score,
+    feedback,
+    strengths,
+    improvements,
+    twistQuestion: twistQuestions[Math.floor(Math.random() * twistQuestions.length)]
+  };
+};
+
 /** Aggregates the last sessions into one diagnosis for the dashboard. */
 export const buildCoachPlan = (sessions: MockInterviewSession[]): CoachPlan | null => {
   if (sessions.length === 0) return null;

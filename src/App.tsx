@@ -17,6 +17,9 @@ import { OfferComparatorView } from './components/OfferComparatorView';
 import { DailyChallengeView } from './components/DailyChallengeView';
 import { GlobalSearch } from './components/GlobalSearch';
 import { QuestionBankView } from './components/QuestionBankView';
+import { PatternLearningView } from './components/PatternLearningView';
+import { BugHuntView } from './components/BugHuntView';
+import { ComplexityGymView } from './components/ComplexityGymView';
 
 import { 
   getStoredProblems, 
@@ -563,6 +566,10 @@ export function App() {
           />
 
         )}
+
+        {activeTab === 'patterns' && <PatternLearningView />}
+        {activeTab === 'bughunt' && <BugHuntView />}
+        {activeTab === 'complexity' && <ComplexityGymView />}
       </main>
 
       {/* Cross-Module Global Search */}

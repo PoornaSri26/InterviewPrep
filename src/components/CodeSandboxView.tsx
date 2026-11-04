@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Problem } from '../types';
 import { runJsCodeAgainstTests, TestResult } from '../services/codeRunner';
+import { evaluateExplainBack } from '../services/coach';
 import confetti from 'canvas-confetti';
 import { 
   Play, 
@@ -14,7 +15,8 @@ import {
   ChevronUp,
   Sparkles,
   Copy,
-  BookOpen
+  BookOpen,
+  MessageSquare
 } from 'lucide-react';
 
 interface CodeSandboxViewProps {
@@ -50,6 +52,9 @@ export const CodeSandboxView: React.FC<CodeSandboxViewProps> = ({
   const [showHints, setShowHints] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [activeTab, setActiveTab] = useState<'testcases' | 'console'>('testcases');
+  const [showExplainBack, setShowExplainBack] = useState(false);
+  const [explanation, setExplanation] = useState('');
+  const [explainResult, setExplainResult] = useState<any>(null);
 
   // When selected problem or language changes
   useEffect(() => {
@@ -139,6 +144,11 @@ public:
   const handleLoadSolution = () => {
     setCode(currentProblem.solutionCodeJs);
     setLanguage('javascript');
+  };
+
+  const handleExplainBack = () => {
+    const result = evaluateExplainBack(currentProblem.title, explanation);
+    setExplainResult(result);
   };
 
   return (
@@ -449,6 +459,79 @@ public:
           </div>
         </div>
       </div>
+
+      {testResults.allPassed && (
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <MessageSquare size={20} color="var(--accent-primary)" />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Explain it Back</h3>
+            </div>
+            <button className="btn btn-secondary" style={{ padding: '0.4rem 0.75rem' }} onClick={() => setShowExplainBack(!showExplainBack)}>
+              {showExplainBack ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+            Explain your solution to a beginner. After that, you'll get a twist question!
+          </p>
+          {showExplainBack && (
+            <div>
+              <textarea
+                value={explanation}
+                onChange={(e) => setExplanation(e.target.value)}
+                placeholder="Explain your approach, algorithm, time/space complexity, and walk through an example..."
+                style={{
+                  width: '100%',
+                  minHeight: '120px',
+                  padding: '0.75rem',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  fontFamily: 'inherit',
+                  resize: 'vertical'
+                }}
+              />
+              <button className="btn btn-primary" style={{ marginTop: '0.75rem' }} onClick={handleExplainBack} disabled={!explanation.trim()}>
+                Evaluate Explanation
+              </button>
+
+              {explainResult && (
+                <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--bg-surface)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <h4 style={{ fontWeight: 600 }}>Score: {explainResult.score}/100</h4>
+                  </div>
+                  {explainResult.strengths.length > 0 && (
+                    <div style={{ marginBottom: '0.75rem' }}>
+                      <p style={{ color: 'var(--accent-success)', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Strengths:</p>
+                      <ul style={{ paddingLeft: '1.25rem' }}>
+                        {explainResult.strengths.map((s: string, i: number) => (
+                          <li key={i} style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {explainResult.improvements.length > 0 && (
+                    <div style={{ marginBottom: '0.75rem' }}>
+                      <p style={{ color: 'var(--accent-warning)', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Improvements:</p>
+                      <ul style={{ paddingLeft: '1.25rem' }}>
+                        {explainResult.improvements.map((imp: string, i: number) => (
+                          <li key={i} style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{imp}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div style={{ padding: '0.75rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid var(--accent-primary)' }}>
+                    <p style={{ fontWeight: 600, marginBottom: '0.5rem', color: 'var(--accent-primary)' }}>Twist Question:</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>{explainResult.twistQuestion}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

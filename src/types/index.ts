@@ -10,6 +10,7 @@ export interface Problem {
   title: string;
   difficulty: Difficulty;
   category: string;
+  patterns?: string[];
   companies: string[];
   description: string;
   examples: { input: string; output: string; explanation?: string }[];
@@ -223,6 +224,42 @@ export interface LeetcodeSheetsFile {
   companyCount: number;
   totalProblems: number;
   sheets: LeetcodeSheet[];
+}
+
+// Pattern-first learning
+export interface DsaPattern {
+  id: string;
+  name: string;
+  description: string;
+  recognitionTips: string[];
+  whenToUse: string[];
+  timeComplexityTypical: string;
+  spaceComplexityTypical: string;
+}
+
+// Bug hunt mode
+export interface BugHuntProblem {
+  id: string;
+  title: string;
+  description: string;
+  language: 'javascript' | 'python';
+  buggyCode: string;
+  expectedBehavior: string;
+  hints: string[];
+  testCases: TestCase[];
+  solutionExplanation: string;
+  bugs: string[];
+}
+
+// Complexity gym
+export interface ComplexityDrill {
+  id: string;
+  code: string;
+  language: 'javascript' | 'python';
+  question: string;
+  expectedTime: string;
+  expectedSpace: string;
+  explanation: string;
 }
 
 export interface ProblemSolution {
