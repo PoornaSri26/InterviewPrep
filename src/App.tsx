@@ -21,6 +21,7 @@ import { PatternLearningView } from './components/PatternLearningView';
 import { BugHuntView } from './components/BugHuntView';
 import { ComplexityGymView } from './components/ComplexityGymView';
 import { NotesView } from './components/NotesView';
+import { CheatSheetView } from './components/CheatSheetView';
 
 import { 
   getStoredProblems, 
@@ -572,6 +573,7 @@ export function App() {
         {activeTab === 'bughunt' && <BugHuntView />}
         {activeTab === 'complexity' && <ComplexityGymView />}
         {activeTab === 'notes' && <NotesView />}
+        {activeTab === 'cheatsheet' && <CheatSheetView />}
       </main>
 
       {/* Cross-Module Global Search */}

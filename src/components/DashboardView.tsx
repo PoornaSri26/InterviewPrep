@@ -21,7 +21,8 @@ import {
   BarChart3,
   Zap,
   Trophy,
-  Bug
+  Bug,
+  BookOpen
 } from 'lucide-react';
 import { StudyTimer } from './StudyTimer';
 import { StreakCalendar } from './StreakCalendar';
@@ -665,6 +666,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <button className="btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem' }} onClick={() => onNavigate('sandbox')}>
             <Sparkles size={16} /> Explain-It-Back in Sandbox
           </button>
+          <button className="btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem' }} onClick={() => onNavigate('cheatsheet')}>
+            <BookOpen size={16} /> Quick Cheat Sheet
+          </button>
         </div>
       </div>
 
@@ -683,6 +687,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div>• Take mocks weekly to track progress</div>
           <div>• Use <strong>Notes</strong> to capture tricky patterns and tricks</div>
           <div>• Use <strong>Study Timer</strong> for focused 25-min sessions</div>
+          <div>• Keep <strong>Cheat Sheet</strong> handy for quick pattern lookups</div>
         </div>
       </div>
 

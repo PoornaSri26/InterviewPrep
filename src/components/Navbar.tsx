@@ -20,7 +20,8 @@ import {
   GitBranch,
   Bug,
   BarChart3,
-  StickyNote
+  StickyNote,
+  BookMarked
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -49,6 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'bughunt', label: 'Bug Hunt', icon: Bug },
     { id: 'complexity', label: 'Complexity Gym', icon: BarChart3 },
     { id: 'notes', label: 'Notes', icon: StickyNote },
+    { id: 'cheatsheet', label: 'Cheat Sheet', icon: BookMarked },
     { id: 'system-design', label: 'System Design', icon: Network },
     { id: 'behavioral', label: 'STAR Studio', icon: MessageSquareText },
     { id: 'roadmap', label: '8-Week Plan', icon: Compass },
