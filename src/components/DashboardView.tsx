@@ -578,6 +578,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
+      {/* Pro Tips */}
+      <div className="glass-card" style={{ padding: '1.25rem', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.05))', borderColor: 'rgba(16, 185, 129, 0.3)' }}>
+        <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-emerald)' }}>
+          <Sparkles size={18} />
+          Pro Tips for Success
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+          <div>• Use <strong>Pattern Learning</strong> before jumping into random problems</div>
+          <div>• Practice <strong>Bug Hunt</strong> to ace debugging rounds</div>
+          <div>• Do <strong>Complexity Gym</strong> for Big O mastery</div>
+          <div>• Use <strong>Explain-It-Back</strong> to solidify understanding</div>
+          <div>• Review with SRS daily for long-term retention</div>
+          <div>• Take mocks weekly to track progress</div>
+        </div>
+      </div>
+
       {/* Behavioral & System Design Quick Cards */}
       <div className="grid-3">
         <div 

@@ -75,5 +75,51 @@ export const bugHuntProblems: BugHuntProblem[] = [
     ],
     solutionExplanation: 'Loop should run up to i <= n or condition should be i <= n',
     bugs: ['Loop condition is wrong - misses fib(2)']
+  },
+  {
+    id: 'bug-4',
+    title: 'Array Max Bug Hunt',
+    description: 'Find maximum element in array. Spot the bug.',
+    language: 'javascript',
+    buggyCode: `function findMax(arr) {
+  let max = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] > max) max = arr[i];
+  }
+  return max;
+}`,
+    expectedBehavior: 'Return maximum element in array',
+    hints: ['What if all numbers are negative?', 'Initialize properly'],
+    testCases: [
+      { input: '[1, 5, 3, 9, 2]', expected: '9' },
+      { input: '[-1, -5, -3]', expected: '-1' }
+    ],
+    solutionExplanation: 'Initialize max to arr[0], not 0. Also handle empty array.',
+    bugs: ['Wrong initialization when all numbers are negative']
+  },
+  {
+    id: 'bug-5',
+    title: 'Reverse Array Bug Hunt',
+    description: 'Reverse an array in place. Find bugs.',
+    language: 'javascript',
+    buggyCode: `function reverseArray(arr) {
+  let left = 0;
+  let right = arr.length;
+  while (left < right) {
+    let temp = arr[left];
+    arr[left] = arr[right];
+    arr[right] = temp;
+    left++;
+    right--;
+  }
+  return arr;
+}`,
+    expectedBehavior: 'Reverse array elements in place',
+    hints: ['Check boundaries'],
+    testCases: [
+      { input: '[1,2,3,4]', expected: '[4,3,2,1]' }
+    ],
+    solutionExplanation: 'right should start at arr.length - 1, not arr.length',
+    bugs: ['Off-by-one: right index starts at wrong position']
   }
 ];

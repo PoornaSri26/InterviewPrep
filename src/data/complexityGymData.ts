@@ -75,5 +75,37 @@ export const complexityDrills: ComplexityDrill[] = [
     expectedTime: 'O(n log n)',
     expectedSpace: 'O(n)',
     explanation: 'Divide and conquer gives log n levels, each element processed once; space for arrays.'
+  },
+  {
+    id: 'cg-6',
+    code: `function quickSort(arr) {
+  if (arr.length <= 1) return arr;
+  const pivot = arr[arr.length - 1];
+  const left = arr.filter(x => x < pivot);
+  const right = arr.filter(x => x > pivot);
+  return [...quickSort(left), pivot, ...quickSort(right)];
+}`,
+    language: 'javascript',
+    question: 'What is the time and space complexity?',
+    expectedTime: 'O(n log n) average, O(n²) worst case',
+    expectedSpace: 'O(n)',
+    explanation: 'Average case good with random pivot, worst case when sorted; filter creates new arrays.'
+  },
+  {
+    id: 'cg-7',
+    code: `function dfs(graph, start, visited = new Set()) {
+  visited.add(start);
+  console.log(start);
+  for (let neighbor of graph[start]) {
+    if (!visited.has(neighbor)) {
+      dfs(graph, neighbor, visited);
+    }
+  }
+}`,
+    language: 'javascript',
+    question: 'What is the time and space complexity?',
+    expectedTime: 'O(V + E)',
+    expectedSpace: 'O(V)',
+    explanation: 'Visit each vertex and edge once; space for visited set and recursion stack.'
   }
 ];

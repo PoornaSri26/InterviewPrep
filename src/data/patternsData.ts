@@ -195,5 +195,31 @@ export const dsaPatterns: DsaPattern[] = [
     whenToUse: ['Course schedule', 'Alien dictionary', 'Sequence reconstruction'],
     timeComplexityTypical: 'O(V + E)',
     spaceComplexityTypical: 'O(V)'
+  },
+  {
+    id: 'monotonic-stack',
+    name: 'Monotonic Stack',
+    description: 'Maintain a stack with monotonic (increasing/decreasing) order to solve "next greater/smaller" efficiently.',
+    recognitionTips: [
+      'Need next greater/smaller element',
+      'Trapping rain water',
+      'Stock span problems'
+    ],
+    whenToUse: ['Next greater element', 'Trapping rain water', 'Stock span'],
+    timeComplexityTypical: 'O(n)',
+    spaceComplexityTypical: 'O(n)'
+  },
+  {
+    id: 'sliding-window-maximum',
+    name: 'Sliding Window Maximum',
+    description: 'Use deque to maintain maximum in sliding window as it moves.',
+    recognitionTips: [
+      'Maximum in every window of size k',
+      'Moving window with max/min',
+      'Need efficient way over O(nk)'
+    ],
+    whenToUse: ['Sliding window maximum', 'The maximum in windows'],
+    timeComplexityTypical: 'O(n)',
+    spaceComplexityTypical: 'O(k)'
   }
 ];
