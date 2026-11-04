@@ -17,7 +17,8 @@ import {
   ShieldCheck,
   Target,
   CalendarCheck,
-  Table
+  Table,
+  BarChart3
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -112,6 +113,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Cross-session coach diagnosis (recency-weighted on the last five sessions)
   const coachPlan = buildCoachPlan(mockSessions);
   const latestCoachDrills = mockSessions.length > 0 ? buildCoachReport(mockSessions[0]).drills.slice(0, 2) : [];
+
+  // Weakness heatmap by category
+  const weaknessMap = problems.reduce((acc, p) => {
+    const cat = p.category || 'Other';
+    if (!acc[cat]) acc[cat] = { total: 0, mastered: 0, learning: 0 };
+    acc[cat].total++;
+    if (p.status === 'mastered') acc[cat].mastered++;
+    if (p.status === 'learning' || p.status === 'reviewing') acc[cat].learning++;
+    return acc;
+  }, {} as Record<string, { total: number; mastered: number; learning: number }>);
+
+  const weakAreas = Object.entries(weaknessMap)
+    .map(([cat, data]) => ({
+      category: cat,
+      total: data.total,
+      masteryRate: data.total ? Math.round((data.mastered / data.total) * 100) : 0,
+      weakness: data.total ? Math.round(((data.total - data.mastered) / data.total) * 100) : 0
+    }))
+    .sort((a, b) => b.weakness - a.weakness)
+    .slice(0, 5);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -449,6 +470,49 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Weakness Heatmap */}
+      {weakAreas.length > 0 && (
+        <div className="glass-card" style={{ padding: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+            <BarChart3 size={22} color="var(--accent-warning)" />
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Weakness Heatmap</h3>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Focus on red areas first</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+            {weakAreas.map((area) => (
+              <div
+                key={area.category}
+                style={{
+                  padding: '0.75rem',
+                  background: area.weakness > 60 ? 'rgba(239, 68, 68, 0.1)' : area.weakness > 30 ? 'rgba(251, 191, 36, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                  border: `1px solid ${area.weakness > 60 ? 'var(--accent-danger)' : area.weakness > 30 ? 'var(--accent-warning)' : 'var(--accent-success)'}`,
+                  borderRadius: 'var(--radius-md)',
+                  cursor: 'pointer'
+                }}
+                onClick={() => onNavigate('dsa')}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{area.category}</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{area.masteryRate}%</span>
+                </div>
+                <div style={{ height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div
+                    style={{
+                      height: '100%',
+                      width: `${area.masteryRate}%`,
+                      background: area.weakness > 60 ? 'var(--accent-danger)' : area.weakness > 30 ? 'var(--accent-warning)' : 'var(--accent-success)'
+                    }}
+                  />
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '0.4rem' }}>
+                  {area.total} problems • {area.weakness}% weak
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Behavioral & System Design Quick Cards */}
       <div className="grid-3">
