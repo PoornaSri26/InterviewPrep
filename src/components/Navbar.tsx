@@ -19,7 +19,8 @@ import {
   Home,
   GitBranch,
   Bug,
-  BarChart3
+  BarChart3,
+  StickyNote
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -43,10 +44,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'mock', label: 'AI Voice Mock', icon: Mic, badge: 'Voice AI' },
     { id: 'dsa', label: 'DSA + Sheets', icon: BrainCircuit, badge: 'SRS' },
-    { id: 'patterns', label: 'Patterns', icon: GitBranch, badge: 'New' },
+    { id: 'patterns', label: 'Patterns', icon: GitBranch },
     { id: 'sandbox', label: 'Code Sandbox', icon: Code2 },
-    { id: 'bughunt', label: 'Bug Hunt', icon: Bug, badge: 'New' },
-    { id: 'complexity', label: 'Complexity Gym', icon: BarChart3, badge: 'New' },
+    { id: 'bughunt', label: 'Bug Hunt', icon: Bug },
+    { id: 'complexity', label: 'Complexity Gym', icon: BarChart3 },
+    { id: 'notes', label: 'Notes', icon: StickyNote },
     { id: 'system-design', label: 'System Design', icon: Network },
     { id: 'behavioral', label: 'STAR Studio', icon: MessageSquareText },
     { id: 'roadmap', label: '8-Week Plan', icon: Compass },
