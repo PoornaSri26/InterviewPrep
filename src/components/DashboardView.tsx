@@ -514,6 +514,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       )}
 
+      {/* New Features Quick Access */}
+      <div className="glass-card" style={{ padding: '1.25rem' }}>
+        <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Sparkles size={18} color="var(--accent-cyan)" />
+          New Learning Modes
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+          <button className="btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem' }} onClick={() => onNavigate('patterns')}>
+            <BrainCircuit size={16} /> Pattern-First Learning
+          </button>
+          <button className="btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem' }} onClick={() => onNavigate('bughunt')}>
+            <ShieldCheck size={16} /> Bug Hunt Mode
+          </button>
+          <button className="btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem' }} onClick={() => onNavigate('complexity')}>
+            <BarChart3 size={16} /> Complexity Gym
+          </button>
+          <button className="btn-secondary" style={{ justifyContent: 'flex-start', padding: '0.75rem' }} onClick={() => onNavigate('sandbox')}>
+            <Sparkles size={16} /> Explain-It-Back in Sandbox
+          </button>
+        </div>
+      </div>
+
       {/* Behavioral & System Design Quick Cards */}
       <div className="grid-3">
         <div 
