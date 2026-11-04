@@ -19,8 +19,11 @@ import {
   CalendarCheck,
   Table,
   BarChart3,
-  Zap
+  Zap,
+  Trophy,
+  Bug
 } from 'lucide-react';
+import { StudyTimer } from './StudyTimer';
 
 interface DashboardViewProps {
   problems: Problem[];
@@ -271,7 +274,76 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Main Row: Radar Chart Competencies + Spaced Due Queue */}
+      {/* Study Timer + Stats Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem' }}>
+        <StudyTimer />
+        {/* Spaced Due Queue - moved up */}
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <div>
+              <h3 style={{ fontSize: '1.2rem' }}>Spaced Repetition Queue</h3>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                Target problems due today to maximize recall retention
+              </p>
+            </div>
+            <button 
+              className="btn-secondary" 
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+              onClick={() => onNavigate('dsa')}
+            >
+              View Full List
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+            {(dueToday.length > 0 ? dueToday : problems).slice(0, 3).map((prob) => {
+              const diffBadge =
+                prob.difficulty === 'Easy'
+                  ? 'badge-easy'
+                  : prob.difficulty === 'Medium'
+                  ? 'badge-medium'
+                  : 'badge-hard';
+
+              return (
+                <div
+                  key={prob.id}
+                  style={{
+                    background: 'var(--bg-surface-elevated)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '0.7rem 0.9rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '1rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>{prob.title}</span>
+                      <span className={`badge ${diffBadge}`}>{prob.difficulty}</span>
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
+                      {prob.category}
+                    </div>
+                  </div>
+
+                  <button
+                    className="btn-primary"
+                    style={{ padding: '0.35rem 0.7rem', fontSize: '0.75rem' }}
+                    onClick={() => onSolveProblem(prob.id)}
+                  >
+                    Solve
+                    <ArrowRight size={12} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Row: Radar Chart Competencies + Coach */}
       <div className="grid-2">
         {/* Competency Radar Evaluation */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
