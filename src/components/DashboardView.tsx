@@ -24,6 +24,7 @@ import {
   Bug
 } from 'lucide-react';
 import { StudyTimer } from './StudyTimer';
+import { StreakCalendar } from './StreakCalendar';
 
 interface DashboardViewProps {
   problems: Problem[];
@@ -290,9 +291,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Study Timer + Stats Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem' }}>
+      {/* Study Timer + Calendar + Stats Row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '1.5rem' }}>
         <StudyTimer />
+        <StreakCalendar />
         {/* Spaced Due Queue - moved up */}
         <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
