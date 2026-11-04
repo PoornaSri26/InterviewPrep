@@ -296,12 +296,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
         <p style={{
           fontSize: '1rem',
           color: 'rgba(255, 255, 255, 0.5)',
-          marginBottom: '2.5rem',
+          marginBottom: '2rem',
           lineHeight: 1.8
         }}>
           AI-powered mock interviews • DSA practice with SRS • System design mastery • 
           Resume-personalized questions • Complete interview preparation platform
         </p>
+        
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          justifyContent: 'center',
+          marginBottom: '2rem',
+          fontSize: '0.85rem',
+          color: 'rgba(255, 255, 255, 0.6)'
+        }}>
+          <span style={{ padding: '0.4rem 0.9rem', background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.4)', borderRadius: '20px' }}>🎯 AI Mock Interviews</span>
+          <span style={{ padding: '0.4rem 0.9rem', background: 'rgba(6, 182, 212, 0.15)', border: '1px solid rgba(6, 182, 212, 0.4)', borderRadius: '20px' }}>🧠 DSA + SRS</span>
+          <span style={{ padding: '0.4rem 0.9rem', background: 'rgba(168, 85, 247, 0.15)', border: '1px solid rgba(168, 85, 247, 0.4)', borderRadius: '20px' }}>🏗️ System Design</span>
+          <span style={{ padding: '0.4rem 0.9rem', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '20px' }}>📄 Resume Personalized</span>
+        </div>
         
         <button
           onClick={onEnterApp}
