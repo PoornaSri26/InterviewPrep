@@ -663,7 +663,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div>• Use <strong>Explain-It-Back</strong> to solidify understanding</div>
           <div>• Review with SRS daily for long-term retention</div>
           <div>• Take mocks weekly to track progress</div>
+          <div>• Use <strong>Notes</strong> to capture tricky patterns and tricks</div>
+          <div>• Use <strong>Study Timer</strong> for focused 25-min sessions</div>
         </div>
+      </div>
+
+      {/* Motivation Quote */}
+      <div className="glass-card" style={{ padding: '1rem 1.25rem', textAlign: 'center', background: 'linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))' }}>
+        <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+          "The expert in anything was once a beginner who refused to give up." - Helen Hayes
+        </p>
       </div>
 
       {/* Behavioral & System Design Quick Cards */}
