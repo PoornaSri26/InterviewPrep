@@ -16,11 +16,15 @@ import {
   Volume2,
   ChevronRight,
   Target,
-  FileText
+  FileText,
+  Upload,
+  User,
+  CheckCircle
 } from 'lucide-react';
 import { MockInterviewSession } from '../types';
 import { voiceAssistant } from '../services/speech';
 import { buildCoachReport, coachDrillCards, deriveScores, reviewAnswers } from '../services/coach';
+import { ResumeParser, ResumeData } from '../services/resumeParser';
 import confetti from 'canvas-confetti';
 
 interface MockInterviewViewProps {
@@ -28,12 +32,16 @@ interface MockInterviewViewProps {
   mockHistory: MockInterviewSession[];
   /** Optional: persist coach drills as flashcards (wired to the Flashcards module). */
   onAddCoachCards?: (cards: { front: string; back: string }[]) => number;
+  resumeData?: ResumeData | null;
+  onResumeUpload?: (resume: ResumeData | null) => void;
 }
 
 export const MockInterviewView: React.FC<MockInterviewViewProps> = ({
   onSaveSession,
   mockHistory,
-  onAddCoachCards
+  onAddCoachCards,
+  resumeData = null,
+  onResumeUpload
 }) => {
   // Setup state
   const [sessionActive, setSessionActive] = useState(false);
@@ -43,6 +51,10 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({
   const [persona, setPersona] = useState('Sarah Jenkins (Staff SWE, Google)');
   const [enableVideo, setEnableVideo] = useState(false);
   const [enableVoice, setEnableVoice] = useState(true);
+  const [usePersonalized, setUsePersonalized] = useState(true);
+  const [resumeText, setResumeText] = useState('');
+  const [resumeUploaded, setResumeUploaded] = useState(!!resumeData);
+  const [personalizedQuestions, setPersonalizedQuestions] = useState<any[]>([]);
 
   // Live session state
   const [timeLeft, setTimeLeft] = useState(900); // 15 mins
@@ -135,6 +147,21 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({
     return `${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  // Handle resume upload
+  const handleResumeUpload = () => {
+    if (!resumeText.trim()) return;
+    const parsed = ResumeParser.parseResume(resumeText);
+    setResumeUploaded(true);
+    if (onResumeUpload) {
+      onResumeUpload(parsed);
+    }
+    // Generate personalized questions
+    if (usePersonalized) {
+      const questions = ResumeParser.generatePersonalizedQuestions(parsed, role, 6);
+      setPersonalizedQuestions(questions);
+    }
+  };
+
   // Start interview
   const startInterview = () => {
     setSessionActive(true);
@@ -146,7 +173,17 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({
     setCoachCardsSaved(null);
     setCurrentResult(null);
 
-    const firstQuestion = questionBank[0].q;
+    let firstQuestion: string;
+    if (usePersonalized && (resumeData || resumeUploaded) && personalizedQuestions.length > 0) {
+      firstQuestion = typeof personalizedQuestions[0] === 'string' ? personalizedQuestions[0] : personalizedQuestions[0].question;
+    } else if (usePersonalized && resumeData) {
+      const questions = ResumeParser.generatePersonalizedQuestions(resumeData, role, 6);
+      setPersonalizedQuestions(questions);
+      firstQuestion = questions[0]?.question || questionBank[0].q;
+    } else {
+      firstQuestion = questionBank[0].q;
+    }
+
     const initialItem = {
       speaker: 'interviewer' as const,
       text: firstQuestion,
@@ -219,10 +256,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({
 
     // Generate interviewer reaction / follow-up
     setTimeout(() => {
-      if (questionIndex < questionBank.length - 1) {
+      const totalQuestions = (usePersonalized && personalizedQuestions.length > 0) ? personalizedQuestions.length : questionBank.length;
+      if (questionIndex < totalQuestions - 1) {
         const nextIdx = questionIndex + 1;
         setQuestionIndex(nextIdx);
-        const nextQ = questionBank[nextIdx].q;
+        let nextQ: string;
+        if (usePersonalized && personalizedQuestions.length > 0) {
+          nextQ = typeof personalizedQuestions[nextIdx] === 'string' ? personalizedQuestions[nextIdx] : personalizedQuestions[nextIdx].question;
+        } else {
+          nextQ = questionBank[nextIdx].q;
+        }
         const aiItem = {
           speaker: 'interviewer' as const,
           text: nextQ,
@@ -453,6 +496,66 @@ ${currentResult.transcript.map((t) => `**[${t.timestamp}] ${t.speaker.toUpperCas
               </select>
             </div>
 
+            {/* Resume Upload Section */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                <label style={{ fontSize: '0.82rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <User size={14} />
+                  Resume for Personalized Questions
+                </label>
+                <button
+                  type="button"
+                  className={`btn-secondary ${usePersonalized ? 'btn-primary' : ''}`}
+                  style={{ padding: '0.25rem 0.6rem', fontSize: '0.75rem' }}
+                  onClick={() => setUsePersonalized(!usePersonalized)}
+                >
+                  {usePersonalized ? 'ON' : 'OFF'}
+                </button>
+              </div>
+              {usePersonalized && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  {(resumeData || resumeUploaded) ? (
+                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.6rem 0.8rem', borderRadius: 'var(--radius-md)', fontSize: '0.78rem', color: '#34d399', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <CheckCircle size={14} />
+                        <span>Resume uploaded - Questions will be personalized</span>
+                      </div>
+                      {(resumeData?.skills && resumeData.skills.length > 0) && (
+                        <div style={{ fontSize: '0.72rem', color: '#86efac', paddingLeft: '1.2rem' }}>
+                          Skills: {resumeData.skills.slice(0, 6).join(', ')}{resumeData.skills.length > 6 ? '...' : ''}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <textarea
+                        className="search-input"
+                        style={{
+                          borderRadius: 'var(--radius-md)',
+                          height: '80px',
+                          resize: 'vertical',
+                          padding: '0.5rem 0.7rem',
+                          fontSize: '0.78rem'
+                        }}
+                        placeholder="Paste your resume content here (text, skills, experience, projects)..."
+                        value={resumeText}
+                        onChange={(e) => setResumeText(e.target.value)}
+                      />
+                      <button
+                        className="btn-secondary"
+                        style={{ padding: '0.5rem', fontSize: '0.8rem' }}
+                        onClick={handleResumeUpload}
+                        disabled={!resumeText.trim()}
+                      >
+                        <Upload size={14} />
+                        Upload & Generate Questions
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Media Toggles */}
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button
@@ -478,7 +581,7 @@ ${currentResult.transcript.map((t) => `**[${t.timestamp}] ${t.speaker.toUpperCas
             <div style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '0.85rem', borderRadius: 'var(--radius-md)', fontSize: '0.8rem', color: '#c7d2fe', display: 'flex', gap: '0.5rem' }}>
               <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <strong>Zero External Setup Required:</strong> This interview suite leverages the native browser Web Speech API for voice synthesis and microphone input with zero API key dependencies.
+                <strong>AI Mock Interview:</strong> {usePersonalized && (resumeData || resumeUploaded) ? 'Using personalized questions based on your resume.' : 'Using curated questions. Upload your resume for personalized AI questions.'}
               </div>
             </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { RepoCatalogEntry } from './data/repoCatalog';
+import { LandingPage } from './components/LandingPage';
 import { Navbar } from './components/Navbar';
 import { DashboardView } from './components/DashboardView';
 import { MockInterviewView } from './components/MockInterviewView';
@@ -48,8 +49,10 @@ import { getStoredRepoCatalogEnabled } from './services/storage';
 import { companyProfiles } from './data/companyData';
 import { systemDesignTopics } from './data/systemDesignData';
 import { allResources } from './data/resourcesData';
+import { ResumeData } from './services/resumeParser';
 
 export function App() {
+  const [showLanding, setShowLanding] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [activeProblemId, setActiveProblemId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -72,6 +75,7 @@ export function App() {
   const [solutions, setSolutions] = useState<SolutionMap>(getStoredSolutions);
   const [repoCatalogEnabled, setRepoCatalogEnabled] = useState<boolean>(getStoredRepoCatalogEnabled);
   const [streak, setStreak] = useState<{ current: number; max: number }>({ current: 1, max: 1 });
+  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
 
   useEffect(() => {
     setStreak(getStreak());
@@ -380,6 +384,10 @@ export function App() {
     setStreak({ current: 1, max: 1 });
   };
 
+  if (showLanding) {
+    return <LandingPage onEnterApp={() => setShowLanding(false)} />;
+  }
+
   return (
     <div className="app-container">
       {/* Navigation Header */}
@@ -411,6 +419,8 @@ export function App() {
             onSaveSession={handleSaveMockSession}
             mockHistory={mockSessions}
             onAddCoachCards={handleAddCoachCards}
+            resumeData={resumeData}
+            onResumeUpload={setResumeData}
           />
 
         )}
