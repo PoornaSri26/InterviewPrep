@@ -195,6 +195,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <BrainCircuit size={18} />
             Review Queue ({dueToday.length})
           </button>
+          <button 
+            className="btn-secondary" 
+            onClick={() => {
+              const unsolved = problems.filter(p => p.status === 'unsolved');
+              if (unsolved.length > 0) {
+                const random = unsolved[Math.floor(Math.random() * unsolved.length)];
+                onSolveProblem(random.id);
+              } else {
+                onNavigate('dsa');
+              }
+            }}
+            style={{ padding: '0.8rem 1.5rem', fontSize: '0.95rem' }}
+          >
+            <Sparkles size={18} />
+            Random Problem
+          </button>
         </div>
       </div>
 
