@@ -18,7 +18,8 @@ import {
   Target,
   CalendarCheck,
   Table,
-  BarChart3
+  BarChart3,
+  Zap
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -128,11 +129,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     .map(([cat, data]) => ({
       category: cat,
       total: data.total,
+      mastered: data.mastered,
       masteryRate: data.total ? Math.round((data.mastered / data.total) * 100) : 0,
       weakness: data.total ? Math.round(((data.total - data.mastered) / data.total) * 100) : 0
     }))
     .sort((a, b) => b.weakness - a.weakness)
     .slice(0, 5);
+
+  const recommendations = [];
+  if (dueToday.length > 0) recommendations.push({ title: 'Review Due Cards', desc: `${dueToday.length} problems due for SRS review`, action: () => onNavigate('dsa'), icon: Clock });
+  if (weakAreas.length > 0 && weakAreas[0].weakness > 40) recommendations.push({ title: `Focus on ${weakAreas[0].category}`, desc: `${weakAreas[0].weakness}% need work`, action: () => onNavigate('dsa'), icon: Target });
+  if (mockSessions.length === 0) recommendations.push({ title: 'Take Your First Mock', desc: 'Practice with AI voice interviewer', action: () => onNavigate('mock'), icon: Mic });
+  else recommendations.push({ title: 'Practice Patterns', desc: 'Learn to recognize problem patterns', action: () => onNavigate('patterns'), icon: BrainCircuit });
+  recommendations.push({ title: 'Bug Hunt Challenge', desc: 'Sharpen debugging skills', action: () => onNavigate('bughunt'), icon: ShieldCheck });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -513,6 +522,39 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Study Recommendations */}
+      <div className="glass-card" style={{ padding: '1.25rem' }}>
+        <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Zap size={18} color="var(--accent-warning)" />
+          Recommended For You
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+          {recommendations.slice(0, 4).map((rec, i) => {
+            const Icon = rec.icon;
+            return (
+              <button
+                key={i}
+                className="glass-card"
+                style={{
+                  padding: '0.9rem',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  border: '1px solid var(--border-subtle)',
+                  background: 'var(--bg-surface)'
+                }}
+                onClick={rec.action}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                  <Icon size={16} color="var(--accent-primary)" />
+                  <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{rec.title}</span>
+                </div>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{rec.desc}</p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* New Features Quick Access */}
       <div className="glass-card" style={{ padding: '1.25rem' }}>
