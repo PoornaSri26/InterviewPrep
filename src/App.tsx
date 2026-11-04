@@ -429,6 +429,7 @@ export function App() {
             onAddToTracker={handleImportSheetProblem}
             sheetMeta={sheetMeta}
             sheetInfo={sheetInfo}
+            repoBank={repoBank}
             onImportFromBank={handleImportFromBank}
           />
 

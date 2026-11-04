@@ -22,6 +22,9 @@ import {
   Database,
   Download,
   X,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
 } from 'lucide-react';
 
 interface DsaTrackerViewProps {
@@ -203,6 +206,42 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
     todayStr,
   ]);
 
+  const [trackerPage, setTrackerPage] = useState(1);
+  const [trackerPageSize, setTrackerPageSize] = useState(30);
+
+  const totalTrackerPages = Math.max(1, Math.ceil(filteredProblems.length / trackerPageSize));
+  const currentTrackerPage = Math.min(trackerPage, totalTrackerPages);
+  const paginatedProblems = useMemo(() => {
+    if (trackerPageSize === 0) return filteredProblems;
+    const start = (currentTrackerPage - 1) * trackerPageSize;
+    return filteredProblems.slice(start, start + trackerPageSize);
+  }, [filteredProblems, currentTrackerPage, trackerPageSize]);
+
+  const handleQuickImportTopN = (count: number) => {
+    if (!onImportFromBank || !repoBank?.problems?.length) return;
+    const items = repoBank.problems.slice(0, count);
+    const added = onImportFromBank(items);
+    setImportFlash(`Successfully imported ${added} problems into your SRS Tracker!`);
+  };
+
+  const filteredBankProblems = useMemo(() => {
+    return (repoBank?.problems ?? []).filter((item) => {
+      const q = bankSearch.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        item.title.toLowerCase().includes(q) ||
+        item.sourceRepo.toLowerCase().includes(q) ||
+        item.topics.some((t) => t.toLowerCase().includes(q));
+      const matchesDifficulty =
+        bankDifficulty === 'All' ||
+        item.difficulty === bankDifficulty;
+      const matchesRepo =
+        bankRepo === 'All' ||
+        item.sourceRepo === bankRepo;
+      return matchesSearch && matchesDifficulty && matchesRepo;
+    });
+  }, [repoBank, bankSearch, bankDifficulty, bankRepo]);
+
   const handleImportSelected = () => {
     if (!onImportFromBank) return;
     const ids = Array.from(selectedIds);
@@ -301,6 +340,15 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
           </button>
           <button
             className="btn btn-secondary"
+            onClick={() => handleQuickImportTopN(1000)}
+            disabled={!repoBank?.problems?.length}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid rgba(99, 102, 241, 0.4)' }}
+            title="Instantly import 1,000 problems into your SRS Tracker"
+          >
+            <Sparkles size={14} color="#a5b4fc" /> Quick Import 1,000
+          </button>
+          <button
+            className="btn btn-secondary"
             onClick={() => setShowAddModal(true)}
             style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
           >
@@ -389,6 +437,38 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
         </select>
       </div>
 
+      {/* Tracker Pagination Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'var(--text-dim)', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <span>
+          Showing <strong>{filteredProblems.length === 0 ? 0 : (currentTrackerPage - 1) * trackerPageSize + 1}</strong>–
+          <strong>{Math.min(currentTrackerPage * trackerPageSize, filteredProblems.length)}</strong> of <strong>{filteredProblems.length.toLocaleString()}</strong> problems
+        </span>
+
+        {totalTrackerPages > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <button
+              className="btn btn-ghost"
+              disabled={currentTrackerPage <= 1}
+              onClick={() => setTrackerPage((p) => Math.max(1, p - 1))}
+              style={{ padding: '0.25rem 0.5rem' }}
+            >
+              <ChevronLeft size={16} /> Prev
+            </button>
+            <span style={{ padding: '0 0.4rem', color: 'var(--text)' }}>
+              Page {currentTrackerPage} of {totalTrackerPages}
+            </span>
+            <button
+              className="btn btn-ghost"
+              disabled={currentTrackerPage >= totalTrackerPages}
+              onClick={() => setTrackerPage((p) => Math.min(totalTrackerPages, p + 1))}
+              style={{ padding: '0.25rem 0.5rem' }}
+            >
+              Next <ChevronRight size={16} />
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Problem list */}
       {filteredProblems.length === 0 ? (
         <div
@@ -414,7 +494,7 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
             gap: '0.5rem',
           }}
         >
-          {filteredProblems.map((problem) => (
+          {paginatedProblems.map((problem) => (
             <div
               key={problem.id}
               className="glass-card"
@@ -538,6 +618,47 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Tracker Pagination Bottom */}
+      {totalTrackerPages > 1 && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', padding: '1rem 0' }}>
+          <button
+            className="btn btn-secondary"
+            disabled={currentTrackerPage <= 1}
+            onClick={() => { setTrackerPage(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+          >
+            First
+          </button>
+          <button
+            className="btn btn-secondary"
+            disabled={currentTrackerPage <= 1}
+            onClick={() => { setTrackerPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+          >
+            <ChevronLeft size={14} /> Prev
+          </button>
+          <span style={{ fontSize: '0.82rem', padding: '0 0.5rem', color: 'var(--text)' }}>
+            Page <strong>{currentTrackerPage}</strong> of <strong>{totalTrackerPages}</strong>
+          </span>
+          <button
+            className="btn btn-secondary"
+            disabled={currentTrackerPage >= totalTrackerPages}
+            onClick={() => { setTrackerPage((p) => Math.min(totalTrackerPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+          >
+            Next <ChevronRight size={14} />
+          </button>
+          <button
+            className="btn btn-secondary"
+            disabled={currentTrackerPage >= totalTrackerPages}
+            onClick={() => { setTrackerPage(totalTrackerPages); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+          >
+            Last
+          </button>
         </div>
       )}
 
@@ -672,6 +793,65 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
               </select>
             </div>
 
+            {/* Quick Selection Toolbar */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.4rem',
+                flexWrap: 'wrap',
+                padding: '0.5rem 1.25rem',
+                background: 'var(--bg-surface-elevated)',
+                borderBottom: '1px solid var(--border-subtle)',
+                alignItems: 'center',
+              }}
+            >
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Quick select:</span>
+              <button
+                className="btn btn-ghost"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => setSelectedIds(new Set(filteredBankProblems.slice(0, 50).map((p) => p.id)))}
+              >
+                Top 50
+              </button>
+              <button
+                className="btn btn-ghost"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => setSelectedIds(new Set(filteredBankProblems.slice(0, 100).map((p) => p.id)))}
+              >
+                Top 100
+              </button>
+              <button
+                className="btn btn-ghost"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => setSelectedIds(new Set(filteredBankProblems.slice(0, 500).map((p) => p.id)))}
+              >
+                Top 500
+              </button>
+              <button
+                className="btn btn-ghost"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', color: 'var(--accent-cyan)' }}
+                onClick={() => setSelectedIds(new Set(filteredBankProblems.slice(0, 1000).map((p) => p.id)))}
+              >
+                Top 1,000
+              </button>
+              <button
+                className="btn btn-ghost"
+                style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}
+                onClick={() => setSelectedIds(new Set(filteredBankProblems.map((p) => p.id)))}
+              >
+                All Filtered ({filteredBankProblems.length})
+              </button>
+              {selectedIds.size > 0 && (
+                <button
+                  className="btn btn-ghost"
+                  style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', color: 'var(--text-dim)' }}
+                  onClick={() => setSelectedIds(new Set())}
+                >
+                  Clear ({selectedIds.size})
+                </button>
+              )}
+            </div>
+
             <div
               style={{
                 flex: 1,
@@ -679,29 +859,13 @@ export const DsaTrackerView: React.FC<DsaTrackerViewProps> = ({
                 padding: '0.5rem 0',
               }}
             >
-              {(repoBank?.problems ?? []).length === 0 ? (
+              {filteredBankProblems.length === 0 ? (
                 <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-dim)' }}>
-                  No repo bank problems available.
+                  No repo bank problems match your filter.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  {(repoBank?.problems ?? [])
-                    .filter((item) => {
-                      const q = bankSearch.trim().toLowerCase();
-                      const matchesSearch =
-                        !q ||
-                        item.title.toLowerCase().includes(q) ||
-                        item.sourceRepo.toLowerCase().includes(q) ||
-                        item.topics.some((t) => t.toLowerCase().includes(q));
-                      const matchesDifficulty =
-                        bankDifficulty === 'All' ||
-                        item.difficulty === bankDifficulty;
-                      const matchesRepo =
-                        bankRepo === 'All' ||
-                        item.sourceRepo === bankRepo;
-                      return matchesSearch && matchesDifficulty && matchesRepo;
-                    })
-                    .map((item) => {
+                  {filteredBankProblems.slice(0, 300).map((item) => {
                       const selected = selectedIds.has(item.id);
                       return (
                         <label

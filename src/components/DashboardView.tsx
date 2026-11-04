@@ -483,7 +483,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             Explore interactive architecture graphs for YouTube, TinyURL, and Distributed Rate Limiters with latency cheat sheets.
           </p>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)' }}>3 Interactive Blueprints</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--accent-cyan)' }}>Interactive Architecture Studio</span>
             <ArrowRight size={16} color="var(--accent-cyan)" />
           </div>
         </div>
@@ -495,13 +495,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: 'var(--accent-emerald)' }}>
             <Sparkles size={20} />
-            <h4 style={{ fontSize: '1.05rem' }}>Resource Hub (50+ Links)</h4>
+            <h4 style={{ fontSize: '1.05rem' }}>Resource Hub (500+ Curated Tools)</h4>
           </div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
             Curated database of all top websites, mock interview platforms, GitHub open-source repositories, and study guides.
           </p>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)' }}>Explore All Catalog</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)' }}>Explore Full Catalog</span>
             <ArrowRight size={16} color="var(--accent-emerald)" />
           </div>
         </div>

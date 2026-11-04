@@ -137,10 +137,12 @@ export interface Flashcard {
   nextReviewDate?: string;
 }
 
+export type CompanyTier = 'FAANG+' | 'Top-Tier' | 'High-Growth' | 'Tier 1' | 'Quant / Fintech' | 'AI Frontier';
+
 export interface CompanyProfile {
   id: string;
   name: string;
-  tier: 'FAANG+' | 'Top-Tier' | 'High-Growth';
+  tier: CompanyTier;
   logo: string;           // emoji stand-in
   accentColor: string;
   interviewProcess: {

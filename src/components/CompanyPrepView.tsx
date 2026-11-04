@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { companyProfiles } from '../data/companyData';
 import {
   ExternalLink,
@@ -8,7 +8,8 @@ import {
   ListChecks,
   Compass,
   Award,
-  Table
+  Table,
+  Search,
 } from 'lucide-react';
 
 interface CompanyPrepViewProps {
@@ -20,6 +21,19 @@ const diffBadge = (d: string) =>
 
 export const CompanyPrepView: React.FC<CompanyPrepViewProps> = ({ onOpenSheet }) => {
   const [selectedId, setSelectedId] = useState(companyProfiles[0]?.id ?? '');
+  const [searchCompany, setSearchCompany] = useState('');
+  const [tierFilter, setTierFilter] = useState<string>('All');
+
+  const tiers = ['All', 'FAANG+', 'Tier 1', 'Quant / Fintech', 'AI Frontier'];
+
+  const filteredCompanies = useMemo(() => {
+    return companyProfiles.filter((c) => {
+      const matchesTier = tierFilter === 'All' || c.tier === tierFilter;
+      const matchesSearch = !searchCompany || c.name.toLowerCase().includes(searchCompany.toLowerCase());
+      return matchesTier && matchesSearch;
+    });
+  }, [tierFilter, searchCompany]);
+
   const company = companyProfiles.find((c) => c.id === selectedId) ?? companyProfiles[0];
 
   if (!company) return null;
@@ -32,7 +46,7 @@ export const CompanyPrepView: React.FC<CompanyPrepViewProps> = ({ onOpenSheet })
           <span className="badge badge-primary">
             <Compass size={12} /> Company Intelligence
           </span>
-          <span className="badge badge-cyan">{companyProfiles.length} profiles</span>
+          <span className="badge badge-cyan">{companyProfiles.length} Top Tech Companies & Quant Firms</span>
         </div>
         <h2 style={{ fontSize: '1.75rem' }}>Company-Specific Interview Prep</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '720px' }}>
@@ -40,21 +54,55 @@ export const CompanyPrepView: React.FC<CompanyPrepViewProps> = ({ onOpenSheet })
         </p>
       </div>
 
-      {/* Company Selector */}
-      <div className="filter-bar" style={{ marginBottom: 0 }}>
-        {companyProfiles.map((c) => {
-          const active = c.id === company.id;
-          return (
-            <button
-              key={c.id}
-              className={active ? 'nav-tab-btn active' : 'nav-tab-btn'}
-              onClick={() => setSelectedId(c.id)}
-              style={active ? { background: c.accentColor, boxShadow: `0 2px 10px ${c.accentColor}55` } : { border: `1px solid ${c.accentColor}44` }}
-            >
-              <span>{c.logo}</span> {c.name}
-            </button>
-          );
-        })}
+      {/* Search and Tier Filter Bar */}
+      <div className="glass-card" style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="search-input-wrapper" style={{ flex: '1 1 240px' }}>
+            <Search size={16} />
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search 52 companies (Google, OpenAI, Jane Street, Stripe…)"
+              value={searchCompany}
+              onChange={(e) => setSearchCompany(e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+            {tiers.map((t) => (
+              <button
+                key={t}
+                className={tierFilter === t ? 'nav-tab-btn active' : 'nav-tab-btn'}
+                onClick={() => setTierFilter(t)}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Company Selector Buttons */}
+        <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', maxHeight: '180px', overflowY: 'auto', padding: '0.25rem 0' }}>
+          {filteredCompanies.map((c) => {
+            const active = c.id === company.id;
+            return (
+              <button
+                key={c.id}
+                className={active ? 'nav-tab-btn active' : 'nav-tab-btn'}
+                onClick={() => setSelectedId(c.id)}
+                style={active ? { background: c.accentColor, boxShadow: `0 2px 10px ${c.accentColor}55`, color: '#fff' } : { border: `1px solid ${c.accentColor}44` }}
+              >
+                <span>{c.logo}</span> {c.name}
+              </button>
+            );
+          })}
+          {filteredCompanies.length === 0 && (
+            <div style={{ padding: '0.5rem', color: 'var(--text-dim)', fontSize: '0.82rem' }}>
+              No companies match "{searchCompany}".
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Company Header */}
